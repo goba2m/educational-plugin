@@ -122,7 +122,7 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
         ProjectView.getInstance(myProject).refresh()
       }
     }
-    actionGroup.add(hideSolvedLessons)
+    actionGroup.addAll(hideSolvedLessons, ShareMySolutionsAction)
   }
 
   private fun updateCourseProgress() {
