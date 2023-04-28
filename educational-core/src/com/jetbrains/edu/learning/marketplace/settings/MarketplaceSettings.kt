@@ -13,16 +13,16 @@ class MarketplaceSettings {
 
   private var account: MarketplaceAccount? = null
 
-  private var shareMySolutions : Boolean? = null
+  private var solutionsSharing: Boolean = false
 
   private val scope = CoroutineScope(Dispatchers.IO)
 
   init {
     scope.launch {
-      shareMySolutions = try {
+      solutionsSharing = try {
         MarketplaceSubmissionsConnector.getInstance().getSharingPreference()
       } catch (e: Exception) {
-        false
+        solutionsSharing
       }
     }
   }
@@ -49,10 +49,10 @@ class MarketplaceSettings {
     account = value
   }
 
-  fun isShareMySolutions() = shareMySolutions ?: false
+  fun isSolutionsSharingEnabled() = solutionsSharing
 
   fun setShareMySolutions(state: Boolean) {
-    shareMySolutions = state
+    solutionsSharing = state
     scope.launch {
       try {
         if (state) {
@@ -62,7 +62,7 @@ class MarketplaceSettings {
         }
       } catch (e: Exception) {
         // todo: add some logging and (or) prompting?
-        shareMySolutions = !state
+        solutionsSharing = !state
       }
     }
   }

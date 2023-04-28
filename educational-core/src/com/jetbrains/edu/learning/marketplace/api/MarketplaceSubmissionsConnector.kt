@@ -21,7 +21,6 @@ import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderDependencyMixin
 import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderWithAnswerMixin
 import com.jetbrains.edu.learning.json.mixins.TaskFileMixin
 import com.jetbrains.edu.learning.marketplace.SUBMISSIONS_SERVICE_PRODUCTION_URL
-import com.jetbrains.edu.learning.marketplace.SUBMISSIONS_SERVICE_STAGING_URL
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.submissions.SolutionFile
 import com.jetbrains.edu.learning.submissions.checkNotEmpty
@@ -44,7 +43,7 @@ class MarketplaceSubmissionsConnector {
     objectMapper
   }
 
-  private val submissionsServiceUrl: String = SUBMISSIONS_SERVICE_STAGING_URL
+  private val submissionsServiceUrl: String = SUBMISSIONS_SERVICE_PRODUCTION_URL
 
   init {
     converterFactory = JacksonConverterFactory.create(objectMapper)
@@ -142,7 +141,7 @@ class MarketplaceSubmissionsConnector {
   suspend fun getSharingPreference() : Boolean {
     LOG.info("Getting solution sharing preference")
     val responseString = submissionsService.getSharingPreference().body()?.string()
-    return responseString == "ALWAYS"
+    return responseString == ALWAYS
   }
 
   private fun doPostSubmission(courseId: Int, taskId: Int, submission: MarketplaceSubmission): Result<MarketplaceSubmission, String>{
@@ -171,6 +170,7 @@ class MarketplaceSubmissionsConnector {
 
   companion object {
     private val LOG = logger<MarketplaceConnector>()
+    private const val ALWAYS = "ALWAYS"
 
     @VisibleForTesting
     fun loadSolutionByLink(solutionsDownloadLink: String): String {

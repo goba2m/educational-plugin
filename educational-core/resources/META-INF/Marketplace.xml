@@ -29,5 +29,6 @@
     <action id="Educational.Marketplace.UpdateCourse" class="com.jetbrains.edu.learning.marketplace.update.SyncMarketplaceCourseAction"/>
     <action id="Educational.StartMarketplaceCourse" class="com.jetbrains.edu.learning.marketplace.course.StartMarketplaceCourseAction"/>
     <action id="Educational.Student.DeleteAllSubmissions" class="com.jetbrains.edu.learning.marketplace.DeleteAllSubmissionsAction"/>
+    <action id="Educational.Student.ShareMySolutions" class="com.jetbrains.edu.learning.projectView.ShareMySolutionsAction"/>
   </actions>
 </idea-plugin>

@@ -8,7 +8,7 @@ import com.jetbrains.edu.learning.messages.EduCoreBundle
 
 object ShareMySolutionsAction : DumbAwareToggleAction(EduCoreBundle.message("action.share.my.solutions.text")) {
 
-    override fun isSelected(e: AnActionEvent): Boolean = MarketplaceSettings.INSTANCE.isShareMySolutions()
+    override fun isSelected(e: AnActionEvent): Boolean = MarketplaceSettings.INSTANCE.isSolutionsSharingEnabled()
 
     override fun setSelected(e: AnActionEvent, state: Boolean) = MarketplaceSettings.INSTANCE.setShareMySolutions(state)
 
