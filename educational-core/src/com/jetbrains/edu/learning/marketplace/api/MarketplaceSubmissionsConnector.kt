@@ -128,14 +128,14 @@ class MarketplaceSubmissionsConnector {
     return submission
   }
 
-  suspend fun enableSolutionSharing(): Boolean {
-    LOG.info("Enabling solution sharing")
-    return submissionsService.enableSolutionSharing().code() == HTTP_NO_CONTENT
-  }
-
-  suspend fun disableSolutionSharing(): Boolean {
-    LOG.info("Disabling solution sharing")
-    return submissionsService.disableSolutionSharing().code() == HTTP_NO_CONTENT
+  suspend fun changeSharingPreference(state: Boolean): Boolean {
+    return if (state) {
+      LOG.info("Enabling solution sharing")
+      submissionsService.enableSolutionSharing().code() == HTTP_NO_CONTENT
+    } else {
+      LOG.info("Disabling solution sharing")
+      submissionsService.disableSolutionSharing().code() == HTTP_NO_CONTENT
+    }
   }
 
   suspend fun getSharingPreference() : Boolean {

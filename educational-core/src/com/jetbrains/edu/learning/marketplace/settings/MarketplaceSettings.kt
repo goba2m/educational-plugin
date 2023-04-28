@@ -55,11 +55,7 @@ class MarketplaceSettings {
     solutionsSharing = state
     scope.launch {
       try {
-        if (state) {
-          MarketplaceSubmissionsConnector.getInstance().enableSolutionSharing()
-        } else {
-          MarketplaceSubmissionsConnector.getInstance().disableSolutionSharing()
-        }
+        MarketplaceSubmissionsConnector.getInstance().changeSharingPreference(state)
       } catch (e: Exception) {
         // todo: add some logging and (or) prompting?
         solutionsSharing = !state
