@@ -27,6 +27,7 @@ import com.jetbrains.edu.learning.submissions.checkNotEmpty
 import com.jetbrains.edu.learning.submissions.findTaskFileInDirWithSizeCheck
 import okhttp3.ConnectionPool
 import org.jetbrains.annotations.VisibleForTesting
+import retrofit2.HttpException
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.BufferedInputStream
 import java.net.HttpURLConnection.HTTP_NO_CONTENT
@@ -128,13 +129,17 @@ class MarketplaceSubmissionsConnector {
     return submission
   }
 
-  suspend fun changeSharingPreference(state: Boolean): Boolean {
-    return if (state) {
-      LOG.info("Enabling solution sharing")
-      submissionsService.enableSolutionSharing().code() == HTTP_NO_CONTENT
-    } else {
-      LOG.info("Disabling solution sharing")
-      submissionsService.disableSolutionSharing().code() == HTTP_NO_CONTENT
+  suspend fun changeSharingPreference(state: Boolean) {
+    val response = if (state) {
+        LOG.info("Enabling solution sharing")
+        submissionsService.enableSolutionSharing()
+      } else {
+        LOG.info("Disabling solution sharing")
+        submissionsService.disableSolutionSharing()
+      }
+
+    if (response.code() != HTTP_NO_CONTENT) {
+      throw HttpException(response)
     }
   }
 
