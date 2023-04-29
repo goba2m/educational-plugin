@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.marketplace
+package com.jetbrains.edu.learning.marketplace.actions
 
 import com.intellij.CommonBundle
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -10,10 +10,12 @@ import com.intellij.openapi.ui.Messages
 import com.jetbrains.edu.coursecreator.CCNotificationUtils.showErrorNotification
 import com.jetbrains.edu.coursecreator.CCNotificationUtils.showNotification
 import com.jetbrains.edu.coursecreator.CCUtils.showLoginNeededNotification
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.StudyTaskManager
+import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.messages.EduCoreBundle
+import com.jetbrains.edu.learning.runInBackground
 import com.jetbrains.edu.learning.submissions.SubmissionsManager
 import org.jetbrains.annotations.NonNls
 

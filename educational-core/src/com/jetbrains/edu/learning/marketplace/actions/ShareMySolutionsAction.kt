@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.projectView
+package com.jetbrains.edu.learning.marketplace.actions
 
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
