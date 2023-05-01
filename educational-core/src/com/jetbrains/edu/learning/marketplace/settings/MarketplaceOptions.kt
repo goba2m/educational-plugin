@@ -48,15 +48,15 @@ class MarketplaceOptions : OAuthLoginOptions<MarketplaceAccount>() {
 
   override fun reset() {
     super.reset()
-    shareMySolutionsCheckBox.isSelected = MarketplaceSettings.INSTANCE.isSolutionsSharingEnabled()
+    shareMySolutionsCheckBox.isSelected = MarketplaceSettings.INSTANCE.solutionsSharing
   }
 
   override fun isModified(): Boolean {
-    return super.isModified() || MarketplaceSettings.INSTANCE.isSolutionsSharingEnabled() != shareMySolutionsCheckBox.isSelected
+    return super.isModified() || MarketplaceSettings.INSTANCE.solutionsSharing != shareMySolutionsCheckBox.isSelected
   }
 
   private val shareMySolutionsCheckBox = JBCheckBox(
     EduCoreBundle.message("marketplace.settings.share.my.solutions"),
-    MarketplaceSettings.INSTANCE.isSolutionsSharingEnabled()
+    MarketplaceSettings.INSTANCE.solutionsSharing
   )
 }

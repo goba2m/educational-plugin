@@ -13,7 +13,8 @@ class MarketplaceSettings {
 
   private var account: MarketplaceAccount? = null
 
-  private var solutionsSharing: Boolean = false
+  var solutionsSharing: Boolean = false
+    private set
 
   private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -48,8 +49,6 @@ class MarketplaceSettings {
   fun setAccount(value: MarketplaceAccount?) {
     account = value
   }
-
-  fun isSolutionsSharingEnabled() = solutionsSharing
 
   fun setShareMySolutions(state: Boolean) {
     solutionsSharing = state

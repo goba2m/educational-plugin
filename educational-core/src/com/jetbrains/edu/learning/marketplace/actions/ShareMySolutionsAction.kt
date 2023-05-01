@@ -15,7 +15,7 @@ object ShareMySolutionsAction : DumbAwareToggleAction(EduCoreBundle.message("act
           StudyTaskManager.getInstance(project).course?.isMarketplace == true
     }
 
-    override fun isSelected(e: AnActionEvent): Boolean = MarketplaceSettings.INSTANCE.isSolutionsSharingEnabled()
+    override fun isSelected(e: AnActionEvent): Boolean = MarketplaceSettings.INSTANCE.solutionsSharing
 
     override fun setSelected(e: AnActionEvent, state: Boolean) = MarketplaceSettings.INSTANCE.setShareMySolutions(state)
 
