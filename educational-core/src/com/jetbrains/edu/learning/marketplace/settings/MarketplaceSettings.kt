@@ -2,9 +2,12 @@ package com.jetbrains.edu.learning.marketplace.settings
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.project.ProjectManager
+import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceAccount
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.marketplace.getJBAUserInfo
+import com.jetbrains.edu.learning.marketplace.isMarketplaceCourse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,7 +59,11 @@ class MarketplaceSettings {
       try {
         MarketplaceSubmissionsConnector.getInstance().changeSharingPreference(state)
       } catch (e: Exception) {
-        // todo: add some logging and (or) prompting?
+        ProjectManager.getInstance().openProjects.forEach {
+          if (!it.isDisposed && it.isMarketplaceCourse()) {
+            MarketplaceNotificationUtils.showFailedToChangeSolutionSharing(it)
+          }
+        }
         solutionsSharing = !state
       }
     }
