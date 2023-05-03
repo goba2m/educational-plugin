@@ -10,6 +10,7 @@ import com.jetbrains.edu.learning.messages.EduCoreBundle
 object ShareMySolutionsAction : DumbAwareToggleAction(EduCoreBundle.message("action.share.my.solutions.text")) {
 
     override fun update(e: AnActionEvent) {
+        super.update(e)
         val project = e.project ?: return
         e.presentation.isEnabledAndVisible =
           StudyTaskManager.getInstance(project).course?.isMarketplace == true
