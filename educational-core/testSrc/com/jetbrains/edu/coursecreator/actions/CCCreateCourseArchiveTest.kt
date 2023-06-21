@@ -3,7 +3,6 @@ package com.jetbrains.edu.coursecreator.actions
 import com.intellij.externalDependencies.DependencyOnPlugin
 import com.intellij.externalDependencies.ExternalDependenciesManager
 import com.intellij.externalDependencies.ProjectExternalDependency
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.jetbrains.edu.coursecreator.actions.CCCreateCourseArchiveTest.PlainTextCompatibilityProvider.Companion.PLAIN_TEXT_PLUGIN_ID
@@ -352,7 +351,7 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
 
     // It is not important, what would be passed to the constructor, except the first argument - project
     // Inside `compute()`, exception would be thrown, so we will not reach the moment of creating the archive
-    getArchiveCreator().compute()
+    getArchiveCreator().createArchive()
 
     val navigatedFile = FileEditorManagerEx.getInstanceEx(project).currentFile ?: error("Navigated file should not be null here")
     assertEquals(task.configFileName, navigatedFile.name)
@@ -542,7 +541,7 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
       additionalFile(EduNames.COURSE_IGNORE, tmpFileName)
     }
     course.description = "my summary"
-    val errorMessage = ApplicationManager.getApplication().runWriteAction<String>(getArchiveCreator())
+    val errorMessage = getArchiveCreator().createArchive() ?: throw IllegalStateException("there should be an error message")
     assertTrue(errorMessage.contains(EduCoreBundle.message("course.creator.error.ignored.files.not.found", EduNames.COURSE_IGNORE)))
     assertTrue(errorMessage.contains(tmpFileName))
   }
