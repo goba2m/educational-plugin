@@ -274,7 +274,7 @@ fun VirtualFile.toStudentFile(project: Project, task: Task): TaskFile? {
       if (task.lesson is FrameworkLesson && length >= getBinaryFileLimit()) {
         throw HugeBinaryFileException("${task.getPathInCourse()}/${taskFile.name}", length, getBinaryFileLimit().toLong(), true)
       }
-      taskFile.contents = InMemoryBinaryContents(contentsToByteArray())
+      taskFile.contents = BinaryContentsFromDisk(this)
       return taskFile
     }
     FileDocumentManager.getInstance().saveDocument(document)
@@ -294,6 +294,8 @@ fun VirtualFile.toStudentFile(project: Project, task: Task): TaskFile? {
         }
       }
       val text = studentDocument.immutableCharSequence.toString()
+      // We store task file contents in memory because we can not make placeholder substitutions later when the contents are needed.
+      // The problem is that during placeholder substitutions, their sizes and offsets are changed and stored in TaskFiles instances.
       taskFile.contents = InMemoryTextualContents(EduMacroUtils.collapseMacrosForFile(project.toCourseInfoHolder(), this, text))
     }
     return taskFile
@@ -328,7 +330,7 @@ fun VirtualFile.setHighlightLevelInsideWriteAction(project: Project, highlightLe
     FileHighlightingSetting.FORCE_HIGHLIGHTING
   }
   val psiFile = PsiManager.getInstance(project).findFile(this) ?: return
-  
+
   // TriggerCompilerHighlightingService will fail if the document for the virtualFile is null.
   // Read the documentation for FileDocumentManager.getDocument to find out when the document may be null.
   if (FileDocumentManager.getInstance().getDocument(this) == null) return

@@ -118,7 +118,8 @@ class CreateCourseArchiveProgressTask(
    */
   private fun createCourseArchive(project: Project, location: String): String? {
     saveOpenedDocuments(project)
-    return ApplicationManager.getApplication().runWriteAction<String>(CourseArchiveCreator(project, location))
+//    return ApplicationManager.getApplication().runWriteAction<String>(CourseArchiveCreator(project, location))
+    return CourseArchiveCreator(project, location).compute()
   }
 
   class ShowFileAction(val path: String) : AnAction(
