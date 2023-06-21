@@ -32,7 +32,7 @@ fun exceedsBase64ContentLimit(base64text: String): Boolean {
 }
 
 fun getBinaryFileLimit(): Int {
-  return 1024 * 1024
+  return 10 * 1024 * 1024
 }
 
 fun getExtension(fileName: String): String {

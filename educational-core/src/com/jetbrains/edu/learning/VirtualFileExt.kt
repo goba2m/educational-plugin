@@ -6,6 +6,7 @@ import com.intellij.codeInsight.daemon.impl.analysis.FileHighlightingSetting
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightLevelUtil
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
@@ -277,26 +278,35 @@ fun VirtualFile.toStudentFile(project: Project, task: Task): TaskFile? {
       taskFile.contents = BinaryContentsFromDisk(this)
       return taskFile
     }
-    FileDocumentManager.getInstance().saveDocument(document)
-    val studentFile = LightVirtualFile("student_task", PlainTextFileType.INSTANCE, document.text)
-    runWithListener(project, taskFile, studentFile) { studentDocument: Document ->
-      for (placeholder in taskFile.answerPlaceholders) {
-        try {
-          placeholder.possibleAnswer = studentDocument.getText(TextRange.create(placeholder.offset, placeholder.endOffset))
-          EduUtilsKt.replaceAnswerPlaceholder(studentDocument, placeholder)
+//    FileDocumentManager.getInstance().saveDocument(document)
+    runReadAction {
+      val studentFile = LightVirtualFile("student_task", PlainTextFileType.INSTANCE, document.text)
+      runWithListener(project, taskFile, studentFile) { studentDocument: Document ->
+        for (placeholder in taskFile.answerPlaceholders) {
+          try {
+            placeholder.possibleAnswer = studentDocument.getText(TextRange.create(placeholder.offset, placeholder.endOffset))
+            EduUtilsKt.replaceAnswerPlaceholder(studentDocument, placeholder)
+          }
+          catch (e: IndexOutOfBoundsException) {
+            // We are here because placeholder is broken. We need to put broken placeholder into exception.
+            // We need to take it from original task, because taskCopy has issues with links (taskCopy.lesson is always null)
+            val file = task.getTaskFile(taskFile.name)
+            val answerPlaceholder = file?.answerPlaceholders?.get(placeholder.index)
+            throw BrokenPlaceholderException(EduCoreBundle.message("exception.broken.placeholder.title"), answerPlaceholder ?: placeholder)
+          }
         }
-        catch (e: IndexOutOfBoundsException) {
-          // We are here because placeholder is broken. We need to put broken placeholder into exception.
-          // We need to take it from original task, because taskCopy has issues with links (taskCopy.lesson is always null)
-          val file = task.getTaskFile(taskFile.name)
-          val answerPlaceholder = file?.answerPlaceholders?.get(placeholder.index)
-          throw BrokenPlaceholderException(EduCoreBundle.message("exception.broken.placeholder.title"), answerPlaceholder ?: placeholder)
-        }
+        val text = studentDocument.immutableCharSequence.toString()
+        // We store task file contents in memory because we can not make placeholder substitutions later when the contents are needed.
+        // The problem is that during placeholder substitutions, their sizes and offsets are changed and stored in TaskFiles instances.
+        taskFile.contents = //InMemoryTextualContents(EduMacroUtils.collapseMacrosForFile(project.toCourseInfoHolder(), this, text))
+           object : TextualContents {
+             override val text: String
+               get() {
+                 LOG.info("OOO read textual file with placeholders")
+                 return EduMacroUtils.collapseMacrosForFile(project.toCourseInfoHolder(), this@toStudentFile, text)
+               }
+           }
       }
-      val text = studentDocument.immutableCharSequence.toString()
-      // We store task file contents in memory because we can not make placeholder substitutions later when the contents are needed.
-      // The problem is that during placeholder substitutions, their sizes and offsets are changed and stored in TaskFiles instances.
-      taskFile.contents = InMemoryTextualContents(EduMacroUtils.collapseMacrosForFile(project.toCourseInfoHolder(), this, text))
     }
     return taskFile
   }

@@ -6,13 +6,17 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.application.runWriteActionAndWait
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.MessageConstants
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.Messages.showYesNoCancelDialog
+import com.intellij.testFramework.runInEdtAndWait
 import com.jetbrains.edu.coursecreator.CCNotificationUtils
 import com.jetbrains.edu.coursecreator.CCUtils.saveOpenedDocuments
 import com.jetbrains.edu.coursecreator.actions.CCCreateCourseArchiveAction.Companion.AUTHOR_NAME
@@ -30,7 +34,7 @@ import java.io.File
 class CreateCourseArchiveProgressTask(
   project: Project,
   private val course: Course,
-): Task.Backgroundable(
+) : Task.Backgroundable(
   project,
   EduCoreBundle.message("action.create.course.archive.progress.bar"),
   true
@@ -40,10 +44,8 @@ class CreateCourseArchiveProgressTask(
     if (checkAllTasksFlag && !checkAllTasksAndShowNotificationIfNeeded(indicator)) {
       return
     }
-    getInEdt {
-      indicator.isIndeterminate = false
-      createSourceArchive(project, course, locationPath, authorName)
-    }
+    indicator.isIndeterminate = false
+    createSourceArchive(project, course, locationPath, authorName, indicator)
   }
 
   /**
@@ -72,6 +74,7 @@ class CreateCourseArchiveProgressTask(
         Notifications.Bus.notify(notification, project)
         false
       }
+
       else -> true
     }
   }
@@ -95,11 +98,17 @@ class CreateCourseArchiveProgressTask(
     Triple(dialog.locationPath, dialog.authorName, dialog.checkAllTasksFlag)
   }
 
-  private fun createSourceArchive(project: Project, course: Course, locationPath: String, authorName: String) {
+  private fun createSourceArchive(
+    project: Project,
+    course: Course,
+    locationPath: String,
+    authorName: String,
+    indicator: ProgressIndicator
+  ) {
     course.vendor = Vendor(authorName)
     PropertiesComponent.getInstance(project).setValue(AUTHOR_NAME, authorName)
 
-    val errorMessage = createCourseArchive(project, locationPath)
+    val errorMessage = createCourseArchive(project, locationPath, indicator)
     if (errorMessage == null) {
       CCNotificationUtils.showNotification(
         project,
@@ -108,7 +117,8 @@ class CreateCourseArchiveProgressTask(
       )
       PropertiesComponent.getInstance(project).setValue(LAST_ARCHIVE_LOCATION, locationPath)
       EduCounterUsageCollector.createCourseArchive()
-    } else {
+    }
+    else {
       Messages.showErrorDialog(project, errorMessage, EduCoreBundle.message("error.failed.to.create.course.archive"))
     }
   }
@@ -116,10 +126,11 @@ class CreateCourseArchiveProgressTask(
   /**
    * @return null when course archive was created successfully, non-empty error message otherwise
    */
-  private fun createCourseArchive(project: Project, location: String): String? {
-    saveOpenedDocuments(project)
-//    return ApplicationManager.getApplication().runWriteAction<String>(CourseArchiveCreator(project, location))
-    return CourseArchiveCreator(project, location).compute()
+  private fun createCourseArchive(project: Project, location: String, indicator: ProgressIndicator): String? {
+    runWriteActionAndWait {
+      saveOpenedDocuments(project)
+    }
+    return CourseArchiveCreator(project, location).doCreateArchive(indicator)
   }
 
   class ShowFileAction(val path: String) : AnAction(
