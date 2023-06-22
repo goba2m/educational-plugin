@@ -1,5 +1,6 @@
 package com.jetbrains.edu.learning.marketplace.settings
 
+import com.intellij.execution.process.ProcessIOExecutorService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.ProjectManager
@@ -8,9 +9,7 @@ import com.jetbrains.edu.learning.marketplace.api.MarketplaceAccount
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.marketplace.getJBAUserInfo
 import com.jetbrains.edu.learning.marketplace.isMarketplaceCourse
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import java.util.concurrent.CompletableFuture
 
 class MarketplaceSettings {
 
@@ -19,16 +18,14 @@ class MarketplaceSettings {
   var solutionsSharing: Boolean = false
     private set
 
-  private val scope = CoroutineScope(Dispatchers.IO)
-
   init {
-    scope.launch {
+    CompletableFuture.runAsync({
       solutionsSharing = try {
         MarketplaceSubmissionsConnector.getInstance().getSharingPreference()
       } catch (e: Exception) {
         solutionsSharing
       }
-    }
+    }, ProcessIOExecutorService.INSTANCE)
   }
 
   fun getMarketplaceAccount(): MarketplaceAccount? {
@@ -55,7 +52,7 @@ class MarketplaceSettings {
 
   fun setShareMySolutions(state: Boolean) {
     solutionsSharing = state
-    scope.launch {
+    CompletableFuture.runAsync({
       try {
         MarketplaceSubmissionsConnector.getInstance().changeSharingPreference(state)
       } catch (e: Exception) {
@@ -66,7 +63,7 @@ class MarketplaceSettings {
         }
         solutionsSharing = !state
       }
-    }
+    }, ProcessIOExecutorService.INSTANCE)
   }
 
   companion object {

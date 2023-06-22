@@ -129,23 +129,23 @@ class MarketplaceSubmissionsConnector {
     return submission
   }
 
-  suspend fun changeSharingPreference(state: Boolean) {
+  fun changeSharingPreference(state: Boolean) {
+    LOG.info("Changing solution sharing to state $state")
+
     val response = if (state) {
-        LOG.info("Enabling solution sharing")
-        submissionsService.enableSolutionSharing()
-      } else {
-        LOG.info("Disabling solution sharing")
-        submissionsService.disableSolutionSharing()
-      }
+      submissionsService.enableSolutionSharing().executeHandlingExceptions()
+    } else {
+      submissionsService.disableSolutionSharing().executeHandlingExceptions()
+    } ?: throw RuntimeException("Failed to change sharing preference")
 
     if (response.code() != HTTP_NO_CONTENT) {
       throw HttpException(response)
     }
   }
 
-  suspend fun getSharingPreference() : Boolean {
+  fun getSharingPreference() : Boolean {
     LOG.info("Getting solution sharing preference")
-    val responseString = submissionsService.getSharingPreference().body()?.string()
+    val responseString = submissionsService.getSharingPreference().executeHandlingExceptions()?.body()?.string()
     return responseString == ALWAYS
   }
 
