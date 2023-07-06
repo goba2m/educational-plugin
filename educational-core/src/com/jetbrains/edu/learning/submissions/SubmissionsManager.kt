@@ -27,7 +27,11 @@ import java.util.stream.Collectors
  */
 @Service
 class SubmissionsManager(private val project: Project) {
+
   private val submissions = ConcurrentHashMap<Int, List<Submission>>()
+
+  private val communitySubmissions = ConcurrentHashMap<Int, List<Submission>>()
+
   var course: Course? = project.course
     @TestOnly set
 
@@ -130,6 +134,19 @@ class SubmissionsManager(private val project: Project) {
       }
     }, ProcessIOExecutorService.INSTANCE)
   }
+
+  fun loadCommunitySubmissions() {
+    val course = this.course
+    val submissionsProvider = course?.getSubmissionsProvider() ?: return
+
+    CompletableFuture.runAsync({
+      if (isLoggedIn()) {
+        val res = submissionsProvider.loadCommunitySubmissions(course)
+        communitySubmissions.putAll(res)
+      }
+    }, ProcessIOExecutorService.INSTANCE)
+  }
+
 
   fun deleteCourseSubmissionsLocally() {
     course?.allTasks?.forEach { submissions.remove(it.id) }

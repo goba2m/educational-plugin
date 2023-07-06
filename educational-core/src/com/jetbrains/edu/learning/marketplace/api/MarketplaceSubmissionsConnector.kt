@@ -20,7 +20,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderDependencyMixin
 import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderWithAnswerMixin
 import com.jetbrains.edu.learning.json.mixins.TaskFileMixin
-import com.jetbrains.edu.learning.marketplace.SUBMISSIONS_SERVICE_PRODUCTION_URL
+import com.jetbrains.edu.learning.marketplace.SUBMISSIONS_SERVICE_STAGING_URL
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.submissions.SolutionFile
 import com.jetbrains.edu.learning.submissions.checkNotEmpty
@@ -43,7 +43,7 @@ class MarketplaceSubmissionsConnector {
     objectMapper
   }
 
-  private val submissionsServiceUrl: String = SUBMISSIONS_SERVICE_PRODUCTION_URL
+  private val submissionsServiceUrl: String = SUBMISSIONS_SERVICE_STAGING_URL
 
   init {
     converterFactory = JacksonConverterFactory.create(objectMapper)
@@ -87,6 +87,19 @@ class MarketplaceSubmissionsConnector {
     val allSubmissions = mutableListOf<MarketplaceSubmission>()
     do {
       val submissionsList = submissionsService.getAllSubmissionsForCourse(courseId, currentPage).executeHandlingExceptions()?.body() ?: break
+      val submissions = submissionsList.submissions
+      allSubmissions.addAll(submissions)
+      currentPage += 1
+    }
+    while (submissions.isNotEmpty() && submissionsList.hasNext)
+    return allSubmissions
+  }
+
+  fun getAllPublicSubmissions(courseId: Int, updateVersion: Int): List<MarketplaceSubmission> {
+    var currentPage = 1
+    val allSubmissions = mutableListOf<MarketplaceSubmission>()
+    do {
+      val submissionsList = submissionsService.getAllPublicSubmissionsForCourse(courseId, updateVersion, page = currentPage).executeHandlingExceptions()?.body() ?: break
       val submissions = submissionsList.submissions
       allSubmissions.addAll(submissions)
       currentPage += 1

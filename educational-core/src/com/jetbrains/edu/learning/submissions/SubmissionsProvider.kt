@@ -16,6 +16,8 @@ interface SubmissionsProvider {
 
   fun loadSubmissions(tasks: List<Task>, courseId: Int): Map<Int, List<Submission>>
 
+  fun loadCommunitySubmissions(course: Course): Map<Int, List<Submission>> { return mapOf() }
+
   fun loadSolutionFiles(submission: MarketplaceSubmission) {}
 
   fun areSubmissionsAvailable(course: Course): Boolean
