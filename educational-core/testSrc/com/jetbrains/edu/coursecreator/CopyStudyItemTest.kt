@@ -1,7 +1,6 @@
 package com.jetbrains.edu.coursecreator
 
 import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.copyFileContents
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.courseFormat.tasks.Task

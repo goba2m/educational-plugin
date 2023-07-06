@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory
 import com.intellij.openapi.diagnostic.logger
 import com.jetbrains.edu.learning.courseFormat.fileContents.FileContentsHolder
+import com.jetbrains.edu.learning.courseFormat.fileContents.InMemoryFileContentsHolder
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.json.mixins.StudyItemDeserializer
 import com.jetbrains.edu.learning.serialization.SerializationUtils
@@ -59,6 +60,27 @@ fun <T : StudyItem> T.copy(): T {
     LOG.error("Failed to create study item copy", e)
   }
   error("Failed to create study item copy")
+}
+
+fun copyFileContents(sourceItem : StudyItem, destinationItem: StudyItem) {
+  fun copyFileContentsForTasks(item1: Task, item2: Task) {
+    for (taskFile1 in item1.taskFiles.values) {
+      val taskFile2 = item2.getTaskFile(taskFile1.name)
+      taskFile2?.contentsHolder = InMemoryFileContentsHolder(taskFile1.contents)
+    }
+  }
+
+  if (sourceItem is Task) {
+    copyFileContentsForTasks(sourceItem, destinationItem as Task)
+    return
+  }
+  if (sourceItem !is ItemContainer) return
+  destinationItem as ItemContainer
+
+  for (subItem1 in sourceItem.items) {
+    val subItem2 = destinationItem.getItem(subItem1.name) ?: continue
+    copyFileContents(subItem1, subItem2)
+  }
 }
 
 class StudyItemCopySerializer : JsonSerializer<StudyItem>() {

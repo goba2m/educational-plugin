@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.TaskFile
+import com.jetbrains.edu.learning.courseFormat.copyFileContents
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.ext.hasChangedFiles
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -52,7 +53,6 @@ object UpdateUtils {
       for ((path, remoteTaskFile) in remoteTaskFiles) {
         val taskFile = taskFiles[path]
         val currentTaskFile = if (taskFile != null) {
-          taskFile.text = remoteTaskFile.text
           taskFile
         }
         else {
@@ -69,6 +69,8 @@ object UpdateUtils {
       }
       task.init(lesson, false)
     }
+
+    copyFileContents(remoteTask, task)
 
     val flm = FrameworkLessonManager.getInstance(project)
 

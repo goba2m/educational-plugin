@@ -8,10 +8,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.jetbrains.edu.learning.*
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.EduFile
-import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
-import com.jetbrains.edu.learning.courseFormat.Lesson
+import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.UnsupportedTask
@@ -193,6 +190,9 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
       problemsUpdates.forEach {
         val localTask = it.localTask
         val taskFromServer = it.taskFromServer
+
+        copyFileContents(taskFromServer, localTask)
+
         val hasLocalTaskBecomeSupported = localTask is UnsupportedTask && taskFromServer !is UnsupportedTask
         if (hasLocalTaskBecomeSupported) {
           replaceTaskInCourse(localTask as UnsupportedTask, taskFromServer)
