@@ -234,6 +234,9 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
           // update of non-test files makes sense only for first task
           updateFrameworkLessonFiles(project, lesson, task, remoteTask, task.index == 1)
         }
+        else {
+          copyFileContents(remoteTask, task)
+        }
 
         updateTaskDescription(project, task, remoteTask)
         task.updateDate = remoteTask.updateDate

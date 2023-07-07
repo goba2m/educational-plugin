@@ -4,11 +4,11 @@ import com.intellij.testFramework.LightPlatformTestCase
 import com.jetbrains.edu.learning.actions.NextTaskAction
 import com.jetbrains.edu.learning.actions.PreviousTaskAction
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.courseFormat.copyFileContents
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.copy
+import com.jetbrains.edu.learning.courseFormat.copyFileContents
 import com.jetbrains.edu.learning.courseFormat.ext.getTaskTextFromTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.fileTree
@@ -50,8 +50,9 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
       }
     }
 
-    assertEquals("fun foo() {}", task2.taskFiles["src/Task.kt"]!!.text)
-    assertEquals(testText, task2.taskFiles["test/Tests2.kt"]!!.text)
+    val task2updated = localCourse.taskList[1]
+    assertEquals(taskText, task2updated.taskFiles["src/Task.kt"]!!.text)
+    assertEquals(testText, task2updated.taskFiles["test/Tests2.kt"]!!.text)
 
     withVirtualFileListener(localCourse) {
       task1.openTaskFileInEditor("src/Task.kt")
@@ -159,6 +160,9 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
         getTaskFile(taskFileName)!!.text = newText
       }
     })
+
+    assertEquals(newText, findTask(0, 0).taskFiles["Task.txt"]?.contents?.textualRepresentation)
+    assertEquals(newText, findTask(0, 1).taskFiles["Task.txt"]?.contents?.textualRepresentation)
 
     fileTree {
       dir("Problems") {

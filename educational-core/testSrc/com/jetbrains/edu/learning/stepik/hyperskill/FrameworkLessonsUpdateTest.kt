@@ -125,8 +125,9 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : NavigationTestBase() {
       }
     }
 
-    assertEquals("fun foo() {}", task.taskFiles["src/Task.kt"]!!.text)
-    assertEquals(testText, task.taskFiles["test/Tests1.kt"]!!.text)
+    val updatedTask = localCourse.taskList[0]
+    assertEquals(taskText, updatedTask.taskFiles["src/Task.kt"]!!.text)
+    assertEquals(testText, updatedTask.taskFiles["test/Tests1.kt"]!!.text)
 
     fileTree {
       dir("lesson1") {
@@ -171,8 +172,12 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : NavigationTestBase() {
       }
     }
 
-    assertEquals("fun foo() {}", task.taskFiles["src/Task.kt"]!!.text)
-    assertEquals("fun test1() {}", task.taskFiles["test/Tests1.kt"]!!.text)
+    val updatedTask = localCourse.taskList[0]
+    assertEquals("fun foo2() {}", updatedTask.taskFiles["src/Task.kt"]!!.text)
+    assertEquals("""
+          fun test1() {}
+          fun test2() {}
+    """.trimIndent(), updatedTask.taskFiles["test/Tests1.kt"]!!.text)
 
     fileTree {
       dir("lesson1") {
@@ -201,7 +206,6 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : NavigationTestBase() {
     createCourseWithFrameworkLessons()
 
     val task1 = localCourse.taskList[0]
-    val task2 = localCourse.taskList[1]
 
     val taskText = "fun foo2() {}"
     val testText = """
@@ -216,9 +220,9 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : NavigationTestBase() {
       }
     }
 
-    assertEquals("fun foo() {}", task2.taskFiles["src/Task.kt"]!!.text)
-    assertEquals(testText, task2.taskFiles["test/Tests2.kt"]!!.text)
-
+    val task2updated = localCourse.taskList[1]
+    assertEquals(taskText, task2updated.taskFiles["src/Task.kt"]!!.text)
+    assertEquals(testText, task2updated.taskFiles["test/Tests2.kt"]!!.text)
 
     withVirtualFileListener(localCourse) {
       task1.openTaskFileInEditor("src/Task.kt")
@@ -229,7 +233,7 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", "fun foo() {}")
+            file("Task.kt", taskText)
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {

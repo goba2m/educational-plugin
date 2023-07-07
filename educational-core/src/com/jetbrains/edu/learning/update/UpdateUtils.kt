@@ -63,12 +63,15 @@ object UpdateUtils {
         if (updateInLocalFS) {
           val taskDir = task.getDir(project.courseDir)
           if (taskDir != null) {
+            println("writing to disk $path ${currentTaskFile.text}")
             GeneratorUtils.createChildFile(project, taskDir, path, currentTaskFile.text)
           }
         }
       }
       task.init(lesson, false)
     }
+
+    val taskHasChangedFiles = task.hasChangedFiles(project)
 
     copyFileContents(remoteTask, task)
 
@@ -79,7 +82,7 @@ object UpdateUtils {
       flm.updateUserChanges(task, task.taskFiles.mapValues { (_, taskFile) -> taskFile.text })
     }
     else {
-      if (updateVisibleFiles && !task.hasChangedFiles(project)) {
+      if (updateVisibleFiles && !taskHasChangedFiles) {
         updateTaskFiles(task, remoteTask.taskFiles, true)
       }
       else {
