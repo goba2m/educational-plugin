@@ -48,7 +48,6 @@ import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.StudyItem
 import com.jetbrains.edu.learning.marketplace.actions.ShareMySolutionsAction
-import com.jetbrains.edu.learning.marketplace.isMarketplaceCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.projectView.ProgressUtil.createProgressBar
 import org.jetbrains.annotations.NonNls
@@ -124,10 +123,7 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
         ProjectView.getInstance(myProject).refresh()
       }
     }
-    actionGroup.add(hideSolvedLessons)
-    if (myProject.isMarketplaceCourse()) {
-      actionGroup.add(ShareMySolutionsAction())
-    }
+    actionGroup.addAll(hideSolvedLessons, ShareMySolutionsAction())
   }
 
   private fun updateCourseProgress() {

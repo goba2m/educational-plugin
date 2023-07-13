@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.util.registry.Registry
+import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.marketplace.isMarketplaceCourse
 import com.jetbrains.edu.learning.marketplace.settings.MarketplaceSettings
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -15,7 +16,10 @@ class ShareMySolutionsAction : DumbAwareToggleAction(EduCoreBundle.message("mark
         super.update(e)
         val project = e.project ?: return
         e.presentation.isEnabled = MarketplaceSettings.INSTANCE.solutionsSharing != null
-        e.presentation.isVisible = project.isMarketplaceCourse() && !Registry.`is`(REGISTRY_KEY, false)
+        e.presentation.isVisible =
+          project.isMarketplaceCourse()
+          && project.isStudentProject()
+          && !Registry.`is`(REGISTRY_KEY, false)
     }
 
     override fun isSelected(e: AnActionEvent): Boolean = MarketplaceSettings.INSTANCE.solutionsSharing ?: false
