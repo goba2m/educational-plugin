@@ -3,7 +3,7 @@ package com.jetbrains.edu.learning.marketplace.actions
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareToggleAction
-import com.jetbrains.edu.learning.StudyTaskManager
+import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.marketplace.settings.MarketplaceSettings
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 
@@ -12,13 +12,13 @@ object ShareMySolutionsAction : DumbAwareToggleAction(EduCoreBundle.message("act
     override fun update(e: AnActionEvent) {
         super.update(e)
         val project = e.project ?: return
-        e.presentation.isEnabledAndVisible =
-          StudyTaskManager.getInstance(project).course?.isMarketplace == true
+        e.presentation.isEnabled = MarketplaceSettings.INSTANCE.solutionsSharing != null
+        e.presentation.isVisible = project.course?.isMarketplace == true
     }
 
-    override fun isSelected(e: AnActionEvent): Boolean = MarketplaceSettings.INSTANCE.solutionsSharing
+    override fun isSelected(e: AnActionEvent): Boolean = MarketplaceSettings.INSTANCE.solutionsSharing ?: false
 
-    override fun setSelected(e: AnActionEvent, state: Boolean) = MarketplaceSettings.INSTANCE.setShareMySolutions(state)
+    override fun setSelected(e: AnActionEvent, state: Boolean) = MarketplaceSettings.INSTANCE.updateSharingPreference(state)
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 }

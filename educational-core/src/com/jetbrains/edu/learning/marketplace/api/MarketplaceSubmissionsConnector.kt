@@ -143,10 +143,11 @@ class MarketplaceSubmissionsConnector {
     }
   }
 
-  fun getSharingPreference() : Boolean {
+  fun getSharingPreference() : MarketplaceSolutionSharingPreference? {
     LOG.info("Getting solution sharing preference")
     val responseString = submissionsService.getSharingPreference().executeHandlingExceptions()?.body()?.string()
-    return responseString == ALWAYS
+
+    return responseString?.let { MarketplaceSolutionSharingPreference.valueOf(it) }
   }
 
   private fun doPostSubmission(courseId: Int, taskId: Int, submission: MarketplaceSubmission): Result<MarketplaceSubmission, String>{
@@ -175,7 +176,6 @@ class MarketplaceSubmissionsConnector {
 
   companion object {
     private val LOG = logger<MarketplaceConnector>()
-    private const val ALWAYS = "ALWAYS"
 
     @VisibleForTesting
     fun loadSolutionByLink(solutionsDownloadLink: String): String {

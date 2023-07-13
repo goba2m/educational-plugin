@@ -15,18 +15,7 @@ class MarketplaceSettings {
 
   private var account: MarketplaceAccount? = null
 
-  var solutionsSharing: Boolean = false
-    private set
-
-  init {
-    CompletableFuture.runAsync({
-      solutionsSharing = try {
-        MarketplaceSubmissionsConnector.getInstance().getSharingPreference()
-      } catch (e: Exception) {
-        solutionsSharing
-      }
-    }, ProcessIOExecutorService.INSTANCE)
-  }
+  var solutionsSharing: Boolean? = null
 
   fun getMarketplaceAccount(): MarketplaceAccount? {
     if (!MarketplaceAccount.isJBALoggedIn()) {
@@ -50,7 +39,7 @@ class MarketplaceSettings {
     account = value
   }
 
-  fun setShareMySolutions(state: Boolean) {
+  fun updateSharingPreference(state: Boolean) {
     solutionsSharing = state
     CompletableFuture.runAsync({
       try {
