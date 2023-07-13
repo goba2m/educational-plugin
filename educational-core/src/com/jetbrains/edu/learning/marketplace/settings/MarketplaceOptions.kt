@@ -25,7 +25,7 @@ class MarketplaceOptions : OAuthLoginOptions<MarketplaceAccount>() {
     get() = MarketplaceConnector.getInstance()
 
   private val shareMySolutionsCheckBox = JBCheckBox(
-    EduCoreBundle.message("marketplace.settings.share.my.solutions"),
+    EduCoreBundle.message("marketplace.solutions.sharing.checkbox"),
     MarketplaceSettings.INSTANCE.solutionsSharing ?: false
   ).apply { isEnabled = false }
 

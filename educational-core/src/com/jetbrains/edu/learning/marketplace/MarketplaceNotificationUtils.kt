@@ -116,8 +116,8 @@ object MarketplaceNotificationUtils {
   fun showFailedToChangeSolutionSharing(project: Project) {
     Notification(
       "JetBrains Academy",
-      EduCoreBundle.message("marketplace.change.solution.sharing.failed.title"),
-      EduCoreBundle.message("marketplace.change.solution.sharing.failed.text"),
+      EduCoreBundle.message("marketplace.solutions.sharing.notification.title"),
+      EduCoreBundle.message("marketplace.solutions.sharing.notification.text"),
       NotificationType.ERROR
     ).notify(project)
   }
