@@ -96,16 +96,18 @@ class MarketplaceSubmissionsConnector {
   }
 
   fun getAllPublicSubmissions(courseId: Int, updateVersion: Int): List<MarketplaceSubmission> {
-    var currentPage = 1
-    val allSubmissions = mutableListOf<MarketplaceSubmission>()
-    do {
-      val submissionsList = submissionsService.getAllPublicSubmissionsForCourse(courseId, updateVersion, page = currentPage).executeHandlingExceptions()?.body() ?: break
-      val submissions = submissionsList.submissions
-      allSubmissions.addAll(submissions)
-      currentPage += 1
+    LOG.info("Loading all published submissions for courseId = $courseId")
+    val result = mutableListOf<MarketplaceSubmission>()
+
+    for (currentPage in generateSequence(1) { it + 1 }) {
+      val marketplaceSubmissionsList = submissionsService.getAllPublicSubmissionsForCourse(courseId, updateVersion, page = currentPage).executeHandlingExceptions()?.body() ?: break
+      val (hasNext, submissions) = marketplaceSubmissionsList.hasNext to marketplaceSubmissionsList.submissions
+      result.addAll(submissions)
+
+      if (!hasNext || submissions.isEmpty()) break
     }
-    while (submissions.isNotEmpty() && submissionsList.hasNext)
-    return allSubmissions
+
+    return result
   }
 
   fun markTheoryTaskAsCompleted(task: TheoryTask) {
