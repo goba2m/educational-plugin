@@ -2,6 +2,7 @@ package com.jetbrains.edu.learning.marketplace.settings
 
 import com.intellij.execution.process.ProcessIOExecutorService
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.ui.HyperlinkAdapter
 import com.intellij.ui.components.JBCheckBox
 import com.jetbrains.edu.learning.api.EduLoginConnector
@@ -10,6 +11,7 @@ import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.marketplace.JET_BRAINS_ACCOUNT
 import com.jetbrains.edu.learning.marketplace.JET_BRAINS_ACCOUNT_PROFILE_PATH
 import com.jetbrains.edu.learning.marketplace.MarketplaceSolutionSharingPreference
+import com.jetbrains.edu.learning.marketplace.actions.ShareMySolutionsAction
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceAccount
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
@@ -56,7 +58,7 @@ class MarketplaceOptions : OAuthLoginOptions<MarketplaceAccount>() {
   }
 
   override fun getAdditionalComponents(): List<JComponent> =
-    if (MarketplaceSettings.INSTANCE.getMarketplaceAccount() != null) {
+    if (MarketplaceSettings.INSTANCE.getMarketplaceAccount() != null && !Registry.`is`(ShareMySolutionsAction.REGISTRY_KEY, false)) {
       listOf(shareMySolutionsCheckBox)
     }
     else {
