@@ -141,8 +141,7 @@ class SubmissionsManager(private val project: Project) {
 
     CompletableFuture.runAsync({
       if (isLoggedIn()) {
-        val res = submissionsProvider.loadCommunitySubmissions(course)
-        communitySubmissions.putAll(res)
+        communitySubmissions.putAll(submissionsProvider.loadCommunitySubmissions(course))
       }
     }, ProcessIOExecutorService.INSTANCE)
   }

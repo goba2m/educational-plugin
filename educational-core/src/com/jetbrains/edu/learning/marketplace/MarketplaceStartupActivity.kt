@@ -37,6 +37,6 @@ class MarketplaceStartupActivity : StartupActivity {
     if (!submissionsManager.submissionsSupported()) return
 
     submissionsManager.prepareSubmissionsContentWhenLoggedIn { MarketplaceSolutionLoader.getInstance(project).loadSolutionsInBackground() }
-    submissionsManager.loadCommunitySubmissions()
+    submissionsManager.loadCommunitySubmissions() // todo: move under registry
   }
 }
