@@ -15,9 +15,9 @@ import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.stepik.getStepikLink
 import com.jetbrains.edu.learning.stepik.hyperskill.courseFormat.HyperskillCourse
 
-class LeaveCommentAction : DumbAwareAction(EduCoreBundle.lazyMessage("action.leave.comment.text"),
+class LeaveFeedbackAction : DumbAwareAction(EduCoreBundle.lazyMessage("action.leave.comment.text"),
                                            EduCoreBundle.lazyMessage("action.leave.comment.text"), EducationalCoreIcons.CommentTask),
-                           RightAlignedToolbarAction {
+                            RightAlignedToolbarAction {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
@@ -45,7 +45,7 @@ class LeaveCommentAction : DumbAwareAction(EduCoreBundle.lazyMessage("action.lea
   }
 
   companion object {
-    const val ACTION_ID: String = "Educational.LeaveCommentAction"
+    const val ACTION_ID: String = "Educational.LeaveFeedbackAction"
 
     @VisibleForTesting
     fun getLink(task: Task): String? {

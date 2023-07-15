@@ -4,7 +4,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 
 fun getLeaveFeedbackActionId(task: Task?): String {
   return if (task?.course?.isMarketplace != true) {
-    LeaveCommentAction.ACTION_ID
+    LeaveFeedbackAction.ACTION_ID
   }
   else {
     LeaveInIdeFeedbackAction.ACTION_ID
