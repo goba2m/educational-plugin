@@ -64,7 +64,7 @@ class CheckPanel(val project: Project, parentDisposable: Disposable) : JPanel(Bo
     if (task?.isChangedOnFailed != true) {
       rightActionsToolbar.add(createSingleActionToolbar(RevertTaskAction.ACTION_ID))
     }
-    rightActionsToolbar.add(createSingleActionToolbar(LeaveCommentAction.ACTION_ID))
+    rightActionsToolbar.add(createSingleActionToolbar(getLeaveFeedbackActionId(task)))
     return rightActionsToolbar
   }
 

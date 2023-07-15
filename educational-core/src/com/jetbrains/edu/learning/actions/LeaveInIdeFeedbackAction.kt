@@ -7,6 +7,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.edu.EducationalCoreIcons
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
+import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.uIfeedback.InIdeFeedbackDialog
 
@@ -33,7 +34,8 @@ class LeaveInIdeFeedbackAction : DumbAwareAction(
 
     val project = e.project ?: return
     if (!project.isStudentProject()) return
-    project.getCurrentTask() ?: return
+    project.getCurrentTask()?: return
+    if (project.course?.isMarketplace != true) return
 
     e.presentation.isEnabledAndVisible = true
   }
