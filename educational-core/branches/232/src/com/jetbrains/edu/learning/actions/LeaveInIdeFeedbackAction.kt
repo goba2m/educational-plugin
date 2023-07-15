@@ -9,6 +9,7 @@ import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.messages.EduCoreBundle
+import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.uIfeedback.InIdeFeedbackDialog
 
 class LeaveInIdeFeedbackAction : DumbAwareAction(
@@ -25,8 +26,7 @@ class LeaveInIdeFeedbackAction : DumbAwareAction(
     if (dialog.showAndGet()) {
       dialog.showThanksNotification()
     }
-    //TODO: add statistics
-    //EduCounterUsageCollector.leaveFeedback()
+    EduCounterUsageCollector.leaveInIdeFeedback()
   }
 
   override fun update(e: AnActionEvent) {

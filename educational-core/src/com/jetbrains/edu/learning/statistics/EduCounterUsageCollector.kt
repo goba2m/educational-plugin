@@ -162,6 +162,7 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
     private val SHOW_FULL_OUTPUT_EVENT = GROUP.registerEvent("show.full.output")
     private val PEEK_SOLUTION_EVENT = GROUP.registerEvent("peek.solution")
     private val LEAVE_FEEDBACK_EVENT = GROUP.registerEvent("leave.feedback")
+    private val LEAVE_IN_IDE_FEEDBACK_EVENT = GROUP.registerEvent("leave.in.ide.feedback")
     private val REVERT_TASK_EVENT = GROUP.registerEvent("revert.task")
     private val CHECK_TASK_EVENT = GROUP.registerEvent("check.task", enumField<CheckStatus>("status"))
     private val REVIEW_STAGE_TOPICS_EVENT = GROUP.registerEvent("review.stage.topics")
@@ -212,6 +213,8 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
     fun solutionPeeked() = PEEK_SOLUTION_EVENT.log()
 
     fun leaveFeedback() = LEAVE_FEEDBACK_EVENT.log()
+
+    fun leaveInIdeFeedback() = LEAVE_IN_IDE_FEEDBACK_EVENT.log()
 
     fun revertTask() = REVERT_TASK_EVENT.log()
 
