@@ -34,7 +34,7 @@ class LeaveInIdeFeedbackAction : DumbAwareAction(
 
     val project = e.project ?: return
     if (!project.isStudentProject()) return
-    project.getCurrentTask()?: return
+    project.getCurrentTask() ?: return
     if (project.course?.isMarketplace != true) return
 
     e.presentation.isEnabledAndVisible = true

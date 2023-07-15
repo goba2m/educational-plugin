@@ -22,14 +22,13 @@ class InIdeFeedbackDialog(
   forTest: Boolean
 ) : BlockBasedFeedbackDialogWithEmail<JbAcademyFeedbackSystemInfoData>(project, forTest) {
 
-  //should we override? or no sense if outside intellij. or should ve introduce our own versioning
   override val myFeedbackJsonVersion: Int = super.myFeedbackJsonVersion + 1
 
   override val myBlocks: List<FeedbackBlock> = listOf(
-  TopLabelBlock(EduCoreBundle.message("ui.feedback.dialog.title")),
-  DescriptionBlock(EduCoreBundle.message("ui.feedback.dialog.description")),
-  RatingBlock(EduCoreBundle.message("ui.feedback.dialog.rating.label"), "rate_impression"),
-  TextAreaBlock(EduCoreBundle.message("ui.feedback.dialog.textarea.label"), "textarea_experience")
+    TopLabelBlock(EduCoreBundle.message("ui.feedback.dialog.title")),
+    DescriptionBlock(EduCoreBundle.message("ui.feedback.dialog.description")),
+    RatingBlock(EduCoreBundle.message("ui.feedback.dialog.rating.label"), "rate_impression"),
+    TextAreaBlock(EduCoreBundle.message("ui.feedback.dialog.textarea.label"), "textarea_experience")
   )
 
   override val myFeedbackReportId: String = "academy_feedback"
@@ -53,14 +52,8 @@ class InIdeFeedbackDialog(
   public override fun showThanksNotification() {
     ThanksForFeedbackNotification(description = EduCoreBundle.message("ui.feedback.thanks.notification.content")).notify(project)
   }
-
-  override fun sendFeedbackData() {
-    //super.sendFeedbackData()
-    return
-  }
 }
 
-//use @Serializable
 data class JbAcademyFeedbackSystemInfoData(
   val isStudent: Boolean,
   val courseType: String,
@@ -68,7 +61,7 @@ data class JbAcademyFeedbackSystemInfoData(
   val courseName: String,
   val taskPath: String,
   val commonSystemInfo: CommonFeedbackSystemInfoData
-): JsonSerializable {
+) : JsonSerializable {
   override fun toString(): String {
     return buildString {
       appendLine(EduCoreBundle.message("ui.feedback.dialog.system.info.course.mode"))
@@ -136,5 +129,12 @@ private fun showJbAcademyFeedbackSystemInfoDialog(
 }
 
 private fun createJbAcademyFeedbackSystemInfoData(course: Course, taskPath: String): JbAcademyFeedbackSystemInfoData {
-  return JbAcademyFeedbackSystemInfoData(course.isStudy, course.itemType, course.id, course.name, taskPath, CommonFeedbackSystemInfoData.getCurrentData())
+  return JbAcademyFeedbackSystemInfoData(
+    course.isStudy,
+    course.itemType,
+    course.id,
+    course.name,
+    taskPath,
+    CommonFeedbackSystemInfoData.getCurrentData()
+  )
 }
