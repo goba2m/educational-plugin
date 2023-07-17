@@ -130,7 +130,7 @@ class MarketplaceSubmissionsConnector {
     return submission
   }
 
-  fun changeSharingPreference(state: Boolean) {
+  fun changeSharingPreference(state: Boolean, onFail: () -> Unit = {}) {
     LOG.info("Changing solution sharing to state $state")
 
     if (state) {
@@ -139,7 +139,7 @@ class MarketplaceSubmissionsConnector {
       submissionsService.disableSolutionSharing().executeParsingErrors()
     }.onError {
       showFailedToChangeSolutionSharing(null)
-      error("Error changing solution sharing")
+      onFail()
     }
   }
 

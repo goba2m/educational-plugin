@@ -39,11 +39,7 @@ class MarketplaceSettings {
   fun updateSharingPreference(state: Boolean) {
     solutionsSharing = state
     CompletableFuture.runAsync({
-      try {
-        MarketplaceSubmissionsConnector.getInstance().changeSharingPreference(state)
-      } catch (e: IllegalStateException) {
-        solutionsSharing = !state
-      }
+        MarketplaceSubmissionsConnector.getInstance().changeSharingPreference(state, onFail = { solutionsSharing = !state })
     }, ProcessIOExecutorService.INSTANCE)
   }
 
