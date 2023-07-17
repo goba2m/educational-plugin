@@ -20,6 +20,8 @@ import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderDependencyMixin
 import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderWithAnswerMixin
 import com.jetbrains.edu.learning.json.mixins.TaskFileMixin
+import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showFailedToChangeSolutionSharing
+import com.jetbrains.edu.learning.marketplace.MarketplaceSolutionSharingPreference
 import com.jetbrains.edu.learning.marketplace.SUBMISSIONS_SERVICE_PRODUCTION_URL
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.submissions.SolutionFile
@@ -27,7 +29,6 @@ import com.jetbrains.edu.learning.submissions.checkNotEmpty
 import com.jetbrains.edu.learning.submissions.findTaskFileInDirWithSizeCheck
 import okhttp3.ConnectionPool
 import org.jetbrains.annotations.VisibleForTesting
-import retrofit2.HttpException
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.BufferedInputStream
 import java.net.HttpURLConnection.HTTP_NO_CONTENT
@@ -132,14 +133,13 @@ class MarketplaceSubmissionsConnector {
   fun changeSharingPreference(state: Boolean) {
     LOG.info("Changing solution sharing to state $state")
 
-    val response = if (state) {
-      submissionsService.enableSolutionSharing().executeHandlingExceptions()
+    if (state) {
+      submissionsService.enableSolutionSharing().executeParsingErrors()
     } else {
-      submissionsService.disableSolutionSharing().executeHandlingExceptions()
-    } ?: throw RuntimeException("Failed to change sharing preference")
-
-    if (response.code() != HTTP_NO_CONTENT) {
-      throw HttpException(response)
+      submissionsService.disableSolutionSharing().executeParsingErrors()
+    }.onError {
+      showFailedToChangeSolutionSharing(null)
+      error("Error changing solution sharing")
     }
   }
 

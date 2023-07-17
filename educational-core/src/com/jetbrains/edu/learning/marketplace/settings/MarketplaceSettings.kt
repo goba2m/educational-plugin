@@ -3,12 +3,9 @@ package com.jetbrains.edu.learning.marketplace.settings
 import com.intellij.execution.process.ProcessIOExecutorService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.project.ProjectManager
-import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceAccount
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.marketplace.getJBAUserInfo
-import com.jetbrains.edu.learning.marketplace.isMarketplaceCourse
 import java.util.concurrent.CompletableFuture
 
 class MarketplaceSettings {
@@ -44,12 +41,7 @@ class MarketplaceSettings {
     CompletableFuture.runAsync({
       try {
         MarketplaceSubmissionsConnector.getInstance().changeSharingPreference(state)
-      } catch (e: Exception) {
-        ProjectManager.getInstance().openProjects.forEach {
-          if (!it.isDisposed && it.isMarketplaceCourse()) {
-            MarketplaceNotificationUtils.showFailedToChangeSolutionSharing(it)
-          }
-        }
+      } catch (e: IllegalStateException) {
         solutionsSharing = !state
       }
     }, ProcessIOExecutorService.INSTANCE)
