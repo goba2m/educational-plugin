@@ -138,10 +138,12 @@ class EduStartupActivity : StartupActivity.DumbAware {
 
     val newContents = CourseIgnoreMigrator.migrate(text, courseIgnoreVersion)
 
-    invokeLater {
-      runWriteAction {
-        val courseIgnoreFile = project.courseDir.findChild(COURSE_IGNORE)
-        courseIgnoreFile?.writeText(newContents)
+    if (newContents != text) {
+      invokeLater {
+        runWriteAction {
+          val courseIgnoreFile = project.courseDir.findChild(COURSE_IGNORE)
+          courseIgnoreFile?.writeText(newContents)
+        }
       }
     }
 
