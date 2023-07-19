@@ -18,6 +18,7 @@ import com.jetbrains.edu.learning.stepik.hyperskill.courseFormat.RemoteEduTask
 import com.jetbrains.edu.learning.stepik.hyperskill.update.HyperskillCourseUpdater
 import com.jetbrains.edu.learning.stepik.hyperskill.update.HyperskillCourseUpdater.Companion.shouldBeUpdated
 import com.jetbrains.edu.learning.testAction
+import com.jetbrains.edu.learning.update.elements.TaskUpdate
 import java.util.*
 
 class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>() {
@@ -337,15 +338,17 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
     assertEquals(newCheckProfile, task.checkProfile)
   }
 
-  private fun <T: Task> T.toTaskUpdate(changeTask: T.() -> Unit): HyperskillCourseUpdater.TaskUpdate {
+  private fun <T: Task> T.toTaskUpdate(changeTask: T.() -> Unit): TaskUpdate {
     val remoteTask = copy()
     remoteTask.changeTask()
     remoteTask.init(parent, false)
-    return HyperskillCourseUpdater.TaskUpdate(this, remoteTask)
+    return TaskUpdate(this, remoteTask)
   }
 
-  private fun updateCourseWithProblems(problemsUpdates: List<HyperskillCourseUpdater.TaskUpdate>,
-                           changeCourse: (HyperskillCourse.() -> Unit)? = null) {
+  private fun updateCourseWithProblems(
+    problemsUpdates: List<TaskUpdate>,
+    changeCourse: (HyperskillCourse.() -> Unit)? = null
+  ) {
     val remoteCourse = changeCourse?.let { toRemoteCourse(changeCourse) }
     HyperskillCourseUpdater(project, localCourse).doUpdate(remoteCourse, problemsUpdates)
     val isProjectUpToDate = remoteCourse == null || localCourse.getProjectLesson()?.shouldBeUpdated(project, remoteCourse) == false

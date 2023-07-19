@@ -33,6 +33,7 @@ import com.jetbrains.edu.learning.update.UpdateUtils.shouldFrameworkLessonBeUpda
 import com.jetbrains.edu.learning.update.UpdateUtils.showUpdateCompletedNotification
 import com.jetbrains.edu.learning.update.UpdateUtils.updateFrameworkLessonFiles
 import com.jetbrains.edu.learning.update.UpdateUtils.updateTaskDescription
+import com.jetbrains.edu.learning.update.elements.TaskUpdate
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 import java.io.IOException
 import java.util.*
@@ -148,8 +149,6 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
     }
   }
 
-  class TaskUpdate(val localTask: Task, val taskFromServer: Task)
-
   @VisibleForTesting
   fun doUpdate(remoteCourse: HyperskillCourse?, problemsUpdates: List<TaskUpdate>) {
     if (remoteCourse != null) {
@@ -188,9 +187,9 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
     invokeAndWaitIfNeeded {
       if (project.isDisposed) return@invokeAndWaitIfNeeded
 
-      problemsUpdates.forEach {
-        val localTask = it.localTask
-        val taskFromServer = it.taskFromServer
+      for (it in problemsUpdates) {
+        val localTask = it.localItem ?: continue
+        val taskFromServer = it.remoteItem ?: continue
         val hasLocalTaskBecomeSupported = localTask is UnsupportedTask && taskFromServer !is UnsupportedTask
         if (hasLocalTaskBecomeSupported) {
           replaceTaskInCourse(localTask as UnsupportedTask, taskFromServer)
