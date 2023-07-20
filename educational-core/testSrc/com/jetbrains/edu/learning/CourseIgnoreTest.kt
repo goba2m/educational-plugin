@@ -16,7 +16,7 @@ class CourseIgnoreTest : EduTestCase() {
         }
       }
       additionalFiles {
-        eduFile(".courseignore", "ignored.txt")
+        eduFile(".courseignore", "/ignored.txt")
         eduFile("ignored.txt")
         eduFile("not-ignored.txt")
       }

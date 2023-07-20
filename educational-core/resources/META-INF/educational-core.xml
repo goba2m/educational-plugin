@@ -226,6 +226,7 @@
                     testServiceImplementation="com.jetbrains.edu.learning.checker.details.MockCheckDetailsView"/>
     <projectService serviceInterface="com.jetbrains.edu.learning.framework.FrameworkLessonManager"
                     serviceImplementation="com.jetbrains.edu.learning.framework.impl.FrameworkLessonManagerImpl"/>
+    <projectService serviceImplementation="com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreChecker"/>
 
     <!-- Courseignore lang: these settings are taken from the Git4Idea plugin -->
     <fileType language="CourseIgnore" extensions="courseignore" fieldName="INSTANCE" name="CourseIgnore file"
@@ -243,6 +244,9 @@
     <registryKey key="edu.task.description.update.delay"
                  description="The delay in ms before loading page by Task Description view. \nRequires project reopening"
                  defaultValue="300"/>
+    <registryKey key="edu.courseignore.update.delay"
+                 description="The delay in ms before .courseignore changes are applied and are visible in the course view. \nRequires project reopening"
+                 defaultValue="500"/>
 
     <applicationConfigurable groupId="tools" instance="com.jetbrains.edu.learning.settings.EduConfigurable"
                              id="Educational" displayName="Education"/>

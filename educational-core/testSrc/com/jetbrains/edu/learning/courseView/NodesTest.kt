@@ -3,6 +3,7 @@ package com.jetbrains.edu.learning.courseView
 
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.testFramework.LightPlatformTestCase
+import com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreChecker
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
@@ -428,6 +429,7 @@ class NodesTest : CourseViewTestBase() {
       additionalFile(courseIgnoredFile)
       additionalFile(EduNames.COURSE_IGNORE, "$courseIgnoredFile\n${lessonIgnoredFile}\n\n")
     }
+    CourseIgnoreChecker.getInstance(project).refresh()
     assertCourseView("""
       |-Project
       | -CCCourseNode Test Course (Course Creation)

@@ -24,6 +24,7 @@ import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
 import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.coursecreator.SynchronizeTaskDescription
+import com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreChecker
 import com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreMigrator
 import com.jetbrains.edu.coursecreator.handlers.CCVirtualFileListener
 import com.jetbrains.edu.learning.EduNames.COURSE_IGNORE
@@ -92,7 +93,9 @@ class EduStartupActivity : StartupActivity.DumbAware {
       selectProjectView(project, true)
 
       migrateYaml(project, course)
+
       migrateCourseIgnore(project, course)
+      CourseIgnoreChecker.getInstance(project).refresh()
 
       setupProject(project, course)
       val coursesStorage = CoursesStorage.getInstance()
