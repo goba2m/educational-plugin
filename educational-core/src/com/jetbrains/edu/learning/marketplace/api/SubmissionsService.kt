@@ -22,12 +22,9 @@ interface SubmissionsService {
   @DELETE("/api/course/submission")
   fun deleteAllSubmissions(): Call<ResponseBody>
 
-  @PATCH("/api/user/sharing/always")
-  fun enableSolutionSharing(): Call<ResponseBody>
-
-  @PATCH("/api/user/sharing/never")
-  fun disableSolutionSharing(): Call<ResponseBody>
-
   @GET("/api/user/sharing")
   fun getSharingPreference(): Call<ResponseBody>
+
+  @PATCH("/api/user/sharing")
+  fun changeSharingPreference(@Query("preference") sharingPreference: String): Call<ResponseBody>
 }

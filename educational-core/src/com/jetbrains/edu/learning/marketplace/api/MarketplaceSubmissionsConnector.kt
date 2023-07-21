@@ -132,15 +132,14 @@ class MarketplaceSubmissionsConnector {
 
   fun changeSharingPreference(state: Boolean, onFail: () -> Unit = {}) {
     LOG.info("Changing solution sharing to state $state")
+    val newSharingPreference = if (state) MarketplaceSolutionSharingPreference.ALWAYS else MarketplaceSolutionSharingPreference.NEVER // fixme: refactor
 
-    if (state) {
-      submissionsService.enableSolutionSharing().executeParsingErrors()
-    } else {
-      submissionsService.disableSolutionSharing().executeParsingErrors()
-    }.onError {
-      showFailedToChangeSolutionSharing()
-      onFail()
-    }
+    submissionsService.changeSharingPreference(newSharingPreference.name)
+      .executeParsingErrors()
+      .onError {
+        showFailedToChangeSolutionSharing()
+        onFail()
+      }
   }
 
   fun getSharingPreference() : MarketplaceSolutionSharingPreference? {
