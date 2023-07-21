@@ -18,8 +18,6 @@ import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.startup.StartupManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.openapi.vfs.readText
-import com.intellij.openapi.vfs.writeText
 import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
 import com.jetbrains.edu.coursecreator.CCUtils
@@ -135,8 +133,9 @@ class EduStartupActivity : StartupActivity.DumbAware {
     val courseIgnoreVersion = propertyComponent.getInt(PROJECT_CURRENT_COURSE_IGNORE_FORMAT_VERSION, 0)
 
     val text = runReadAction {
-      val courseIgnoreFile = project.courseDir.findChild(COURSE_IGNORE)
-      courseIgnoreFile?.readText()
+      val courseIgnoreFile = project.courseDir.findChild(COURSE_IGNORE) ?: return@runReadAction null
+      val bytes = courseIgnoreFile.contentsToByteArray() ?: return@runReadAction null
+      String(bytes, courseIgnoreFile.charset)
     } ?: return
 
     val newContents = CourseIgnoreMigrator.migrate(text, courseIgnoreVersion)
@@ -144,8 +143,9 @@ class EduStartupActivity : StartupActivity.DumbAware {
     if (newContents != text) {
       invokeLater {
         runWriteAction {
-          val courseIgnoreFile = project.courseDir.findChild(COURSE_IGNORE)
-          courseIgnoreFile?.writeText(newContents)
+          val courseIgnoreFile = project.courseDir.findChild(COURSE_IGNORE) ?: return@runWriteAction
+          val newContentsAsBytes = newContents.toByteArray(courseIgnoreFile.charset)
+          courseIgnoreFile.setBinaryContent(newContentsAsBytes)
         }
       }
     }

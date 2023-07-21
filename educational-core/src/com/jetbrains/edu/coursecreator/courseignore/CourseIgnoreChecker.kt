@@ -5,7 +5,6 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vcs.changes.ignore.cache.PatternCache
-import com.intellij.openapi.vfs.readText
 import com.jetbrains.edu.learning.EduNames.COURSE_IGNORE
 import com.jetbrains.edu.learning.courseDir
 
@@ -31,7 +30,8 @@ class CourseIgnoreChecker(private val project: Project) : Disposable {
   fun refresh() {
     val text = runReadAction {
       val file = project.courseDir.findChild(COURSE_IGNORE)
-      file?.readText()
+      val bytes = file?.contentsToByteArray() ?: return@runReadAction null
+      String(bytes, file.charset)
     } ?: return
 
     refresh(text)
