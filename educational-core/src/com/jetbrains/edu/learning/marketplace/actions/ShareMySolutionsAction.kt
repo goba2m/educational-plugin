@@ -36,9 +36,9 @@ class ShareMySolutionsAction : DumbAwareToggleAction(EduCoreBundle.message("mark
 
     private fun isAvailableInSettings() = MarketplaceSettings.INSTANCE.solutionsSharing != null
 
-    private fun isVisible(project: Project) = project.isMarketplaceCourse()
+    private fun isVisible(project: Project) = Registry.`is`(REGISTRY_KEY, false)
+                                              && project.isMarketplaceCourse()
                                               && project.isStudentProject()
-                                              && Registry.`is`(REGISTRY_KEY, false)
 
     companion object {
 

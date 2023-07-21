@@ -129,4 +129,4 @@ fun markTheoryTaskAsCompleted(project: Project, task: TheoryTask) {
   }
 }
 
-fun Project.isMarketplaceCourse(): Boolean = this.course?.isMarketplace == true
+fun Project.isMarketplaceCourse(): Boolean = course?.isMarketplace == true

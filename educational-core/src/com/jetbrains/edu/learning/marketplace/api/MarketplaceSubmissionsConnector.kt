@@ -138,7 +138,7 @@ class MarketplaceSubmissionsConnector {
     } else {
       submissionsService.disableSolutionSharing().executeParsingErrors()
     }.onError {
-      showFailedToChangeSolutionSharing(null)
+      showFailedToChangeSolutionSharing()
       onFail()
     }
   }
