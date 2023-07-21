@@ -4,6 +4,7 @@ import com.intellij.execution.process.ProcessIOExecutorService
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareToggleAction
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
@@ -19,14 +20,12 @@ class ShareMySolutionsAction : DumbAwareToggleAction(EduCoreBundle.message("mark
         super.update(e)
         val project = e.project ?: return
 
+        e.presentation.isVisible = isVisible(project)
+        if (!e.presentation.isVisible) return
+
         CompletableFuture.runAsync({
             e.presentation.isEnabled = isAvailableInSettings() || MarketplaceSubmissionsConnector.getInstance().getSharingPreference() != null
         }, ProcessIOExecutorService.INSTANCE)
-
-        e.presentation.isVisible =
-          project.isMarketplaceCourse()
-          && project.isStudentProject()
-          && !Registry.`is`(REGISTRY_KEY, false)
     }
 
     override fun isSelected(e: AnActionEvent): Boolean = MarketplaceSettings.INSTANCE.solutionsSharing ?: false
@@ -36,6 +35,10 @@ class ShareMySolutionsAction : DumbAwareToggleAction(EduCoreBundle.message("mark
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     private fun isAvailableInSettings() = MarketplaceSettings.INSTANCE.solutionsSharing != null
+
+    private fun isVisible(project: Project) = project.isMarketplaceCourse()
+                                              && project.isStudentProject()
+                                              && Registry.`is`(REGISTRY_KEY, false)
 
     companion object {
 

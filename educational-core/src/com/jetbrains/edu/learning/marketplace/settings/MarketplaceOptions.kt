@@ -58,7 +58,7 @@ class MarketplaceOptions : OAuthLoginOptions<MarketplaceAccount>() {
   }
 
   override fun getAdditionalComponents(): List<JComponent> =
-    if (MarketplaceSettings.INSTANCE.getMarketplaceAccount() != null && !Registry.`is`(ShareMySolutionsAction.REGISTRY_KEY, false)) {
+    if (Registry.`is`(ShareMySolutionsAction.REGISTRY_KEY, false) && MarketplaceSettings.INSTANCE.getMarketplaceAccount() != null) {
       listOf(shareMySolutionsCheckBox)
     }
     else {
