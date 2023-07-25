@@ -62,35 +62,26 @@ data class JbAcademyFeedbackSystemInfoData(
 ) : JsonSerializable {
   override fun toString(): String {
     return buildString {
-      appendLine(EduCoreBundle.message("ui.feedback.dialog.system.info.course.mode"))
-      appendLine()
-      appendLine(
+      appendLinesWithName(EduCoreBundle.message("ui.feedback.dialog.system.info.course.mode"))
+      appendLinesWithName(
         if (isStudent) EduCoreBundle.message("ui.feedback.dialog.system.info.course.mode.student")
         else EduCoreBundle.message("ui.feedback.dialog.system.info.course.mode.teacher")
       )
-      appendLine()
-
-      appendLine(EduCoreBundle.message("ui.feedback.dialog.system.info.course.type"))
-      appendLine()
-      appendLine(courseType)
-      appendLine()
-
-      appendLine(EduCoreBundle.message("ui.feedback.dialog.system.info.course.id"))
-      appendLine()
-      appendLine(courseId)
-      appendLine()
-
-      appendLine(EduCoreBundle.message("ui.feedback.dialog.system.info.course.name"))
-      appendLine()
-      appendLine(courseName)
-      appendLine()
-
-      appendLine(EduCoreBundle.message("ui.feedback.dialog.system.info.task"))
-      appendLine()
-      appendLine(taskPath)
-      appendLine()
+      appendLinesWithName(EduCoreBundle.message("ui.feedback.dialog.system.info.course.type"))
+      appendLinesWithName(courseType)
+      appendLinesWithName(EduCoreBundle.message("ui.feedback.dialog.system.info.course.id"))
+      appendLinesWithName(courseId.toString())
+      appendLinesWithName(EduCoreBundle.message("ui.feedback.dialog.system.info.course.name"))
+      appendLinesWithName(courseName)
+      appendLinesWithName(EduCoreBundle.message("ui.feedback.dialog.system.info.task"))
+      appendLinesWithName(taskPath)
       commonSystemInfo.toString()
     }
+  }
+  
+  private fun StringBuilder.appendLinesWithName(lineName: String) {
+    appendLine(lineName)
+    appendLine()
   }
 
   override fun serializeToJson(json: Json): JsonElement {
@@ -109,24 +100,16 @@ private fun showJbAcademyFeedbackSystemInfoDialog(
     )
   }
   row(EduCoreBundle.message("ui.feedback.dialog.system.info.course.type")) {
-    label(
-      systemInfoData.courseType
-    )
+    label(systemInfoData.courseType)
   }
   row(EduCoreBundle.message("ui.feedback.dialog.system.info.course.id")) {
-    label(
-      systemInfoData.courseId.toString()
-    )
+    label(systemInfoData.courseId.toString())
   }
   row(EduCoreBundle.message("ui.feedback.dialog.system.info.course.name")) {
-    label(
-      systemInfoData.courseName
-    )
+    label(systemInfoData.courseName)
   }
   row(EduCoreBundle.message("ui.feedback.dialog.system.info.task")) {
-    label(
-      systemInfoData.taskPath
-    )
+    label(systemInfoData.taskPath)
   }
 }
 
