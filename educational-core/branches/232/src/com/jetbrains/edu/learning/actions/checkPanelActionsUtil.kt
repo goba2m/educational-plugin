@@ -2,8 +2,8 @@ package com.jetbrains.edu.learning.actions
 
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 
-fun getLeaveFeedbackActionId(task: Task?): String {
-  return if (task?.course?.isMarketplace != true) {
+fun getLeaveFeedbackActionId(task: Task): String {
+  return if (task.course?.isMarketplace != true) {
     LeaveFeedbackAction.ACTION_ID
   }
   else {
