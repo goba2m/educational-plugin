@@ -10,11 +10,6 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 
 class TaskFeedbackLinksTest : EduTestCase() {
 
-  fun testStepikLink() {
-    val task = getRemoteEduTask()
-    assertEquals("Incorrect link", "https://release.stepik.org/lesson/0/step/1", LeaveFeedbackAction.getLink(task))
-  }
-
   fun testNoneLink() {
     val task = getRemoteEduTask(isMarketplaceCourse = true)
     assertNull(LeaveFeedbackAction.getLink(task))
