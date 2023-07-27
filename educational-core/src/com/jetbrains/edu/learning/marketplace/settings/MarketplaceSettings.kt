@@ -3,9 +3,11 @@ package com.jetbrains.edu.learning.marketplace.settings
 import com.intellij.execution.process.ProcessIOExecutorService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
+import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showFailedToChangeSolutionSharing
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceAccount
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.marketplace.getJBAUserInfo
+import com.jetbrains.edu.learning.onError
 import java.util.concurrent.CompletableFuture
 
 class MarketplaceSettings {
@@ -37,9 +39,12 @@ class MarketplaceSettings {
   }
 
   fun updateSharingPreference(state: Boolean) {
-    solutionsSharing = state
     CompletableFuture.runAsync({
-        MarketplaceSubmissionsConnector.getInstance().changeSharingPreference(state, onFail = { solutionsSharing = !state })
+      MarketplaceSubmissionsConnector.getInstance().changeSharingPreference(state).onError {
+        showFailedToChangeSolutionSharing()
+        return@runAsync
+      }
+      solutionsSharing = state
     }, ProcessIOExecutorService.INSTANCE)
   }
 

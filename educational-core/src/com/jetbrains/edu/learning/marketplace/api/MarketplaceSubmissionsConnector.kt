@@ -20,7 +20,6 @@ import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderDependencyMixin
 import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderWithAnswerMixin
 import com.jetbrains.edu.learning.json.mixins.TaskFileMixin
-import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showFailedToChangeSolutionSharing
 import com.jetbrains.edu.learning.marketplace.MarketplaceSolutionSharingPreference
 import com.jetbrains.edu.learning.marketplace.SUBMISSIONS_SERVICE_PRODUCTION_URL
 import com.jetbrains.edu.learning.marketplace.settings.MarketplaceSettings
@@ -29,7 +28,9 @@ import com.jetbrains.edu.learning.submissions.SolutionFile
 import com.jetbrains.edu.learning.submissions.checkNotEmpty
 import com.jetbrains.edu.learning.submissions.findTaskFileInDirWithSizeCheck
 import okhttp3.ConnectionPool
+import okhttp3.ResponseBody
 import org.jetbrains.annotations.VisibleForTesting
+import retrofit2.Response
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.BufferedInputStream
 import java.net.HttpURLConnection.HTTP_NO_CONTENT
@@ -131,16 +132,13 @@ class MarketplaceSubmissionsConnector {
     return submission
   }
 
-  fun changeSharingPreference(state: Boolean, onFail: () -> Unit = {}) {
+  fun changeSharingPreference(state: Boolean): Result<Response<ResponseBody>, String> {
     LOG.info("Changing solution sharing to state $state for user ${MarketplaceSettings.INSTANCE.getMarketplaceAccount()?.userInfo?.name}")
-    val newSharingPreference = if (state) MarketplaceSolutionSharingPreference.ALWAYS else MarketplaceSolutionSharingPreference.NEVER // fixme: refactor
+    val newSharingPreference = if (state) MarketplaceSolutionSharingPreference.ALWAYS else MarketplaceSolutionSharingPreference.NEVER
 
-    submissionsService.changeSharingPreference(newSharingPreference.name)
+    return submissionsService
+      .changeSharingPreference(newSharingPreference.name)
       .executeParsingErrors()
-      .onError {
-        showFailedToChangeSolutionSharing()
-        onFail()
-      }
   }
 
   fun getSharingPreference() : MarketplaceSolutionSharingPreference? {
