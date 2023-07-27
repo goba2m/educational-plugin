@@ -23,6 +23,7 @@ import com.jetbrains.edu.learning.json.mixins.TaskFileMixin
 import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showFailedToChangeSolutionSharing
 import com.jetbrains.edu.learning.marketplace.MarketplaceSolutionSharingPreference
 import com.jetbrains.edu.learning.marketplace.SUBMISSIONS_SERVICE_PRODUCTION_URL
+import com.jetbrains.edu.learning.marketplace.settings.MarketplaceSettings
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.submissions.SolutionFile
 import com.jetbrains.edu.learning.submissions.checkNotEmpty
@@ -131,7 +132,7 @@ class MarketplaceSubmissionsConnector {
   }
 
   fun changeSharingPreference(state: Boolean, onFail: () -> Unit = {}) {
-    LOG.info("Changing solution sharing to state $state")
+    LOG.info("Changing solution sharing to state $state for user ${MarketplaceSettings.INSTANCE.getMarketplaceAccount()?.userInfo?.name}")
     val newSharingPreference = if (state) MarketplaceSolutionSharingPreference.ALWAYS else MarketplaceSolutionSharingPreference.NEVER // fixme: refactor
 
     submissionsService.changeSharingPreference(newSharingPreference.name)
