@@ -39,6 +39,7 @@ import com.jetbrains.edu.learning.codeforces.courseFormat.CodeforcesTask
 import com.jetbrains.edu.learning.codeforces.courseFormat.CodeforcesTaskWithFileIO
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.ext.disambiguateContents
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.ext.project
 import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask
@@ -300,6 +301,10 @@ object YamlFormatSynchronizer {
   private fun StudyItem.saveConfig(project: Project, configName: String, mapper: ObjectMapper) {
     val dir = getConfigDir(project)
 
+    if (this is Task) {
+      disambiguateTaskFilesContents()
+    }
+
     invokeLater {
       runWriteAction {
         val file = dir.findOrCreateChildData(javaClass, configName)
@@ -377,5 +382,11 @@ fun StudyItem.getConfigDir(project: Project): VirtualFile {
   }
   else {
     getDir(project.courseDir) ?: error("Config for '$this' not found")
+  }
+}
+
+private fun Task.disambiguateTaskFilesContents() {
+  for ((path, taskFile) in taskFiles) {
+    taskFile.contents = taskFile.contents.disambiguateContents(path)
   }
 }
