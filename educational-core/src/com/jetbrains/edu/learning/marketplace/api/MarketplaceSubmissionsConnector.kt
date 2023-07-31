@@ -29,6 +29,7 @@ import okhttp3.ConnectionPool
 import org.jetbrains.annotations.VisibleForTesting
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.BufferedInputStream
+import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_NO_CONTENT
 import java.net.URL
 
@@ -66,19 +67,31 @@ class MarketplaceSubmissionsConnector {
     return retrofit.create(SubmissionsService::class.java)
   }
 
-  fun deleteAllSubmissions(userName: String): Boolean {
+  fun deleteAllSubmissions(userName: String): Result<Int, String> {
     LOG.info("Deleting submissions for user $userName")
-    val response = submissionsService.deleteAllSubmissions().executeParsingErrors().onError {
-      LOG.error("Failed to delete all submissions to user $userName. Error message: $it")
-      return false
-    }
 
-    if (response.code() == HTTP_NO_CONTENT) {
-      LOG.info("Successfully deleted all submissions for user $userName")
-      return true
+    return when (val response = submissionsService.deleteAllSubmissions().executeCall()) {
+      is Ok -> {
+        return when (response.value.code()) {
+          HTTP_NO_CONTENT -> {
+            LOG.info("Successfully deleted all submissions for user $userName")
+            Ok(response.value.code())
+          }
+          HTTP_NOT_FOUND ->  {
+            Ok(response.value.code())
+          }
+          else -> {
+            val errorMsg = response.value.errorBody()?.string() ?: "Unknown error"
+            LOG.error("Failed to delete all submissions to user $userName. Error message: $errorMsg")
+            Err(errorMsg)
+          }
+        }
+      }
+      is Err -> {
+        LOG.error("Failed to delete all submissions to user $userName. Error message: ${response.error}")
+        response
+      }
     }
-
-    return false
   }
 
   fun getAllSubmissions(courseId: Int): List<MarketplaceSubmission> {

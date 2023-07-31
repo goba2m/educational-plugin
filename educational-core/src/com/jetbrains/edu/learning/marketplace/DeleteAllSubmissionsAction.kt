@@ -10,12 +10,17 @@ import com.intellij.openapi.ui.Messages
 import com.jetbrains.edu.coursecreator.CCNotificationUtils.showErrorNotification
 import com.jetbrains.edu.coursecreator.CCNotificationUtils.showNotification
 import com.jetbrains.edu.coursecreator.CCUtils.showLoginNeededNotification
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.Ok
+import com.jetbrains.edu.learning.StudyTaskManager
+import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.messages.EduCoreBundle
+import com.jetbrains.edu.learning.runInBackground
 import com.jetbrains.edu.learning.submissions.SubmissionsManager
 import org.jetbrains.annotations.NonNls
+import java.net.HttpURLConnection.HTTP_NOT_FOUND
+import java.net.HttpURLConnection.HTTP_NO_CONTENT
 
 @Suppress("ComponentNotRegistered")
 class DeleteAllSubmissionsAction : AnAction(EduCoreBundle.lazyMessage("marketplace.action.delete.all.submissions")) {
@@ -49,21 +54,31 @@ class DeleteAllSubmissionsAction : AnAction(EduCoreBundle.lazyMessage("marketpla
 
   private fun doDeleteSubmissions(project: Project, userName: String) {
     runInBackground(project, title = EduCoreBundle.getMessage("marketplace.delete.submissions.background.title")) {
-      val success = MarketplaceSubmissionsConnector.getInstance().deleteAllSubmissions(userName)
-      if (success) {
-        SubmissionsManager.getInstance(project).deleteCourseSubmissionsLocally()
-        showNotification(
-          project,
-          EduCoreBundle.message("marketplace.delete.submissions.success.title"),
-          EduCoreBundle.message("marketplace.delete.submissions.success.message", userName)
-        )
-      }
-      else {
-        showErrorNotification(
-          project,
-          EduCoreBundle.message("marketplace.delete.submissions.failed.title"),
-          EduCoreBundle.message("marketplace.delete.submissions.failed.message", userName)
-        )
+      val result = MarketplaceSubmissionsConnector.getInstance().deleteAllSubmissions(userName)
+
+      when ((result as? Ok)?.value) {
+        HTTP_NO_CONTENT -> {
+          SubmissionsManager.getInstance(project).deleteCourseSubmissionsLocally()
+          showNotification(
+            project,
+            EduCoreBundle.message("marketplace.delete.submissions.success.title"),
+            EduCoreBundle.message("marketplace.delete.submissions.success.message", userName)
+          )
+        }
+        HTTP_NOT_FOUND -> {
+          showNotification(
+            project,
+            EduCoreBundle.message("marketplace.delete.submissions.nothing.title"),
+            EduCoreBundle.message("marketplace.delete.submissions.nothing.message", userName)
+          )
+        }
+        else -> {
+          showErrorNotification(
+            project,
+            EduCoreBundle.message("marketplace.delete.submissions.failed.title"),
+            EduCoreBundle.message("marketplace.delete.submissions.failed.message", userName)
+          )
+        }
       }
     }
   }
