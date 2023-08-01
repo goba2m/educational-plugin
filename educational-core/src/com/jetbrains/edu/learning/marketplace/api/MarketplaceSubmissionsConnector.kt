@@ -67,7 +67,7 @@ class MarketplaceSubmissionsConnector {
     return retrofit.create(SubmissionsService::class.java)
   }
 
-  fun deleteAllSubmissions(userName: String): Result<Int, String> {
+  fun deleteAllSubmissions(userName: String): Int? {
     LOG.info("Deleting submissions for user $userName")
 
     return when (val response = submissionsService.deleteAllSubmissions().executeCall()) {
@@ -75,21 +75,21 @@ class MarketplaceSubmissionsConnector {
         return when (response.value.code()) {
           HTTP_NO_CONTENT -> {
             LOG.info("Successfully deleted all submissions for user $userName")
-            Ok(response.value.code())
+            response.value.code()
           }
           HTTP_NOT_FOUND ->  {
-            Ok(response.value.code())
+            response.value.code()
           }
           else -> {
             val errorMsg = response.value.errorBody()?.string() ?: "Unknown error"
             LOG.error("Failed to delete all submissions to user $userName. Error message: $errorMsg")
-            Err(errorMsg)
+            null
           }
         }
       }
       is Err -> {
         LOG.error("Failed to delete all submissions to user $userName. Error message: ${response.error}")
-        response
+        null
       }
     }
   }

@@ -10,7 +10,6 @@ import com.intellij.openapi.ui.Messages
 import com.jetbrains.edu.coursecreator.CCNotificationUtils.showErrorNotification
 import com.jetbrains.edu.coursecreator.CCNotificationUtils.showNotification
 import com.jetbrains.edu.coursecreator.CCUtils.showLoginNeededNotification
-import com.jetbrains.edu.learning.Ok
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
@@ -54,9 +53,7 @@ class DeleteAllSubmissionsAction : AnAction(EduCoreBundle.lazyMessage("marketpla
 
   private fun doDeleteSubmissions(project: Project, userName: String) {
     runInBackground(project, title = EduCoreBundle.getMessage("marketplace.delete.submissions.background.title")) {
-      val result = MarketplaceSubmissionsConnector.getInstance().deleteAllSubmissions(userName)
-
-      when ((result as? Ok)?.value) {
+      when (MarketplaceSubmissionsConnector.getInstance().deleteAllSubmissions(userName)) {
         HTTP_NO_CONTENT -> {
           SubmissionsManager.getInstance(project).deleteCourseSubmissionsLocally()
           showNotification(
@@ -64,15 +61,13 @@ class DeleteAllSubmissionsAction : AnAction(EduCoreBundle.lazyMessage("marketpla
             EduCoreBundle.message("marketplace.delete.submissions.success.title"),
             EduCoreBundle.message("marketplace.delete.submissions.success.message", userName)
           )
-        }
-        HTTP_NOT_FOUND -> {
+        } HTTP_NOT_FOUND -> {
           showNotification(
             project,
             EduCoreBundle.message("marketplace.delete.submissions.nothing.title"),
             EduCoreBundle.message("marketplace.delete.submissions.nothing.message", userName)
           )
-        }
-        else -> {
+        } else -> {
           showErrorNotification(
             project,
             EduCoreBundle.message("marketplace.delete.submissions.failed.title"),
