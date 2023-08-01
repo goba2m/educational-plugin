@@ -70,25 +70,21 @@ class MarketplaceSubmissionsConnector {
   fun deleteAllSubmissions(userName: String): Int? {
     LOG.info("Deleting submissions for user $userName")
 
-    return when (val response = submissionsService.deleteAllSubmissions().executeCall()) {
-      is Ok -> {
-        return when (response.value.code()) {
-          HTTP_NO_CONTENT -> {
-            LOG.info("Successfully deleted all submissions for user $userName")
-            response.value.code()
-          }
-          HTTP_NOT_FOUND ->  {
-            response.value.code()
-          }
-          else -> {
-            val errorMsg = response.value.errorBody()?.string() ?: "Unknown error"
-            LOG.error("Failed to delete all submissions to user $userName. Error message: $errorMsg")
-            null
-          }
-        }
-      }
-      is Err -> {
-        LOG.error("Failed to delete all submissions to user $userName. Error message: ${response.error}")
+    val response = submissionsService.deleteAllSubmissions().executeCall().onError {
+      LOG.error("Failed to delete all submissions for user $userName. Error message: $it")
+      return null
+    }
+
+    return when (val responseCode = response.code()) {
+      HTTP_NO_CONTENT -> {
+        LOG.info("Successfully deleted all submissions for user $userName")
+        responseCode
+      } HTTP_NOT_FOUND ->  {
+        LOG.info("There are no submissions to delete for user $userName")
+        responseCode
+      } else -> {
+        val errorMsg = response.errorBody()?.string() ?: "Unknown error"
+        LOG.error("Failed to delete all submissions for user $userName. Error message: $errorMsg")
         null
       }
     }
