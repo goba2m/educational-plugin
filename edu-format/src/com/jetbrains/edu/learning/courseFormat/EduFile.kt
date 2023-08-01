@@ -48,17 +48,10 @@ open class EduFile {
   var isLearnerCreated: Boolean = false
 
   constructor()
-  constructor(name: String, text: String) {
+
+  constructor(name: String, contents: FileContents) {
     this.name = name
-    this.text = text
-  }
-
-  constructor(name: String, text: String, isVisible: Boolean) : this(name, text) {
-    this.isVisible = isVisible
-  }
-
-  constructor(name: String, text: String, isVisible: Boolean, isLearnerCreated: Boolean) : this(name, text, isVisible) {
-    this.isLearnerCreated = isLearnerCreated
+    this.contents = contents
   }
 
   @Suppress("unused") // used for serialization

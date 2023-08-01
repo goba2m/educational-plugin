@@ -13,13 +13,20 @@ import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileVisitor
 import com.jetbrains.edu.coursecreator.actions.CCCreateCourseArchiveAction
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.BinaryContentsFromDisk
+import com.jetbrains.edu.learning.EduNames
+import com.jetbrains.edu.learning.TextualContentsFromDisk
+import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.EduFile
 import com.jetbrains.edu.learning.courseFormat.Lesson
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.document
 import com.jetbrains.edu.learning.exceptions.HugeBinaryFileException
+import com.jetbrains.edu.learning.getTask
+import com.jetbrains.edu.learning.getTaskFile
+import com.jetbrains.edu.learning.isToEncodeContent
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.stepik.api.LessonAdditionalInfo
 import com.jetbrains.edu.learning.stepik.api.TaskAdditionalInfo
@@ -140,7 +147,13 @@ object AdditionalFilesUtils {
         if (taskFile != null) return null
 
         val path = VfsUtilCore.getRelativePath(file, project.courseDir) ?: return null
-        return EduFile(path, file.loadEncodedContent())
+        val contents = if (file.isToEncodeContent) {
+          BinaryContentsFromDisk(file)
+        }
+        else {
+          TextualContentsFromDisk(file)
+        }
+        return EduFile(path, contents)
       }
     }
 }
