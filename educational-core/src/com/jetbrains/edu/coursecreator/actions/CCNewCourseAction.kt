@@ -33,10 +33,6 @@ class CCNewCourseAction(
     return EduCoreBundle.message("course.dialog.create.course.help.tooltip")
   }
 
-  override fun update(e: AnActionEvent) {
-    e.presentation.isEnabledAndVisible = CCPluginToggleAction.isCourseCreatorFeaturesEnabled
-  }
-
   companion object {
     @NonNls
     const val ACTION_ID = "Educational.Educator.NewCourse"

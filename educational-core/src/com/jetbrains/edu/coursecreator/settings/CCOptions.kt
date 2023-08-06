@@ -6,7 +6,6 @@ import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.dsl.builder.bind
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
-import com.jetbrains.edu.coursecreator.actions.CCPluginToggleAction.Companion.isCourseCreatorFeaturesEnabled
 import com.jetbrains.edu.learning.EduExperimentalFeatures
 import com.jetbrains.edu.learning.isFeatureEnabled
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -21,9 +20,6 @@ private const val HTML = "Html"
 private const val MARKDOWN = "Markdown"
 
 class CCOptions : BoundConfigurable(EduCoreBundle.message("ccoptions.display.name")), OptionsProvider {
-
-  override fun isAvailable(): Boolean = isCourseCreatorFeaturesEnabled
-
   override fun createPanel(): DialogPanel {
     val settings = CCSettings.getInstance()
     return panel {
