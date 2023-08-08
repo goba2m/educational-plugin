@@ -158,21 +158,20 @@ abstract class CCCreateStudyItemActionBase<Item : StudyItem>(
     dataContext: DataContext,
     studyItemCreator: (NewStudyItemInfo) -> Unit
   ) {
-    parentItem ?: return
+    if (parentItem == null) return
 
-    val addedAsLast = isAddedAsLast(project, course, sourceDirectory)
-
-    val index = if (addedAsLast) {
-      ITEM_INDEX.getData(dataContext) ?: getSiblingsSize(course, parentItem)
+    val index = ITEM_INDEX.getData(dataContext) ?: if (isAddedAsLast(project, course, sourceDirectory)) {
+      getSiblingsSize(course, parentItem)
     }
     else {
       val thresholdItem = getThresholdItem(project, course, sourceDirectory) ?: return
-      ITEM_INDEX.getData(dataContext) ?: thresholdItem.index
+      thresholdItem.index
     }
+    
     val suggestedName = SUGGESTED_NAME.getData(dataContext) ?: suggestName(
       parentItem,
       itemType.presentableName,
-      if (addedAsLast) Int.MAX_VALUE else index
+      index
     )
 
     val parentItemDir = parentItem.getDir(project.courseDir) ?: return
