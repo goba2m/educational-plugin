@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.testFramework.EditorTestUtil
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
+import junit.framework.TestCase
 import java.awt.Point
 
 class PlaceholderShapeTest : EduTestCase() {
@@ -105,6 +106,8 @@ class PlaceholderShapeTest : EduTestCase() {
                           LogicalPositionInLine(2, 0, PositionInLine.BOTTOM),
                           LogicalPositionInLine(0, 0, PositionInLine.BOTTOM),
                           LogicalPositionInLine(0, 61, PositionInLine.BOTTOM))
+    println("Java version: ${System.getProperty("java.vendor.version")}")
+    println("Java vendor: ${System.getProperty("java.vendor")}")
     checkPath("""
       |class DateRange(val start: MyDate, val endInclusive: MyDate) <placeholder>{
       |    operator fun contains(d: MyDate) = d >= start && d <= endInclusive
