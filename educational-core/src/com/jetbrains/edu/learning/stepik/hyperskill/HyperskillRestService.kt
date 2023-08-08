@@ -27,12 +27,14 @@ class HyperskillRestService : OAuthRestService(HYPERSKILL) {
   @Throws(InterruptedException::class, InvocationTargetException::class)
   override fun isHostTrusted(request: FullHttpRequest, urlDecoder: QueryStringDecoder): Boolean {
     val uri = request.uri()
+    val isOriginAllowed = checkHost(request, HYPERSKILL_URL, LOG)
     val oAuthCodeMatcher = OAUTH_CODE_PATTERN.matcher(uri)
     val oAuthErrorMatcher = OAUTH_ERROR_CODE_PATTERN.matcher(uri)
     val openCourseMatcher = OPEN_COURSE_PATTERN.matcher(uri)
     val openStepMatcher = OPEN_STEP_PATTERN.matcher(uri)
     val pluginInfo = PLUGIN_INFO.matcher(uri)
-    return if (request.method() === HttpMethod.GET && (oAuthCodeMatcher.matches()
+    return if (request.method() === HttpMethod.GET && (isOriginAllowed
+                                                       || oAuthCodeMatcher.matches()
                                                        || oAuthErrorMatcher.matches()
                                                        || openCourseMatcher.matches()
                                                        || openStepMatcher.matches()

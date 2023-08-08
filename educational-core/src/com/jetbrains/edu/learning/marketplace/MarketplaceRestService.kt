@@ -6,6 +6,7 @@ import com.jetbrains.edu.learning.Ok
 import com.jetbrains.edu.learning.authUtils.OAuthRestService
 import com.jetbrains.edu.learning.authUtils.hasOpenDialogs
 import com.jetbrains.edu.learning.authUtils.sendPluginInfoResponse
+import com.jetbrains.edu.learning.checkHost
 import com.jetbrains.edu.learning.courseGeneration.ProjectOpener
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.marketplace.courseGeneration.MarketplaceOpenCourseRequest
@@ -22,11 +23,13 @@ class MarketplaceRestService : OAuthRestService(MARKETPLACE) {
   @Throws(InterruptedException::class, InvocationTargetException::class)
   override fun isHostTrusted(request: FullHttpRequest, urlDecoder: QueryStringDecoder): Boolean {
     val uri = request.uri()
+    val isOriginAllowed = checkHost(request, PLUGINS_REPOSITORY_URL, LOG)
     val isOauthCodeRequest = getStringParameter(CODE_ARGUMENT, urlDecoder) != null
     val isOpenCourseRequest = getIntParameter(COURSE_ID, urlDecoder) != -1
     val isErrorRequest = getStringParameter(ERROR, urlDecoder) != null
     val isPluginInfoRequest = uri.contains(INFO)
-    return if (request.method() === HttpMethod.GET && (isOauthCodeRequest || isOpenCourseRequest || isErrorRequest || isPluginInfoRequest)) {
+    return if (request.method() === HttpMethod.GET
+               && (isOriginAllowed || isOauthCodeRequest || isOpenCourseRequest || isErrorRequest || isPluginInfoRequest)) {
       true
     }
     else super.isHostTrusted(request, urlDecoder)

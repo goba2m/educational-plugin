@@ -10,6 +10,7 @@ import com.intellij.ide.lightEdit.LightEdit
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.CommandProcessor
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -22,6 +23,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.PlatformUtils
 import com.intellij.util.TimeoutUtil
+import com.intellij.util.io.origin
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.Course
@@ -41,10 +43,12 @@ import com.jetbrains.edu.learning.projectView.ProgressUtil.updateCourseProgress
 import com.jetbrains.edu.learning.taskDescription.ui.EduBrowserHyperlinkListener
 import com.jetbrains.edu.learning.taskDescription.ui.TaskDescriptionView
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames
+import io.netty.handler.codec.http.FullHttpRequest
 import org.intellij.markdown.flavours.gfm.GFMFlavourDescriptor
 import org.intellij.markdown.html.HtmlGenerator
 import org.intellij.markdown.parser.MarkdownParser
 import java.io.IOException
+import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
@@ -188,6 +192,20 @@ private fun readCourseraCourseJson(jsonText: String): Course? {
   catch (e: IOException) {
     null
   }
+}
+
+fun checkHost(request: FullHttpRequest, allowedHost: String, logger: Logger): Boolean {
+  val origin = request.origin ?: return false
+  logger.debug("Checking host '$origin' against '$allowedHost'")
+  if (origin.isEmpty()) {
+    logger.warn("RestService got request from empty origin")
+    return false
+  }
+  if (URL(origin).host != URL(allowedHost).host) {
+    logger.warn("Service got request from unexpected origin: '$origin'")
+    return false
+  }
+  return true
 }
 
 @JsonAutoDetect(setterVisibility = JsonAutoDetect.Visibility.NONE)
